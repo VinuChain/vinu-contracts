@@ -1,92 +1,190 @@
-# VINU-contracts
+# Special Fee Contract
 
+The SFC (Special Fee Contract) maintains a group of validators and their delegations.
 
+It distributes the rewards, based on internal transaction created by the Opera node.
 
-## Getting started
+# Compile in docker
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+1. `make`
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Build output can be found in `build/`
 
-## Add your files
+# Test in docker
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+1. `make test`
 
+If everything is all right, it should output something along this:
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/gotbitio/blockchain/backspace/blockchains/vinu/vinu-contracts.git
-git branch -M main
-git push -uf origin main
+  Contract: SFC
+    Nde
+      ✓ Should migrate to New address (67ms)
+      ✓ Should not migrate if not owner (56ms)
+      ✓ Should not copyCode if not owner (41ms)
+      ✓ Should copyCode (49ms)
+      ✓ Should not copyCode if not SFC address (43ms)
+      ✓ Should update network version (43ms)
+      ✓ Should not update network version if not owner (38ms)
+      ✓ Should advance epoch
+      ✓ Should not set a new storage if not backend address (43ms)
+      ✓ Should not advance epoch if not owner (43ms)
+      ✓ Should not set backend if not backend address
+      ✓ Should not swap code if not backend address (40ms)
+      ✓ Should not be possible add a Genesis Validator through NodeDriver if not called by Node (55ms)
+      ✓ Should not be possible to deactivate a validator through NodeDriver if not called by Node (40ms)
+      ✓ Should not be possible to add a Genesis Delegation through NodeDriver if not called by node
+      ✓ Should not be possible to seal Epoch Validators through NodeDriver if not called by node
+      ✓ Should not be possible to seal Epoch through NodeDriver if not called by node (40ms)
+    Genesis Validator
+      ✓ Set Genesis Validator with bad Status (44ms)
+      ✓ should reject sealEpoch if not called by Node
+      ✓ should reject SealEpochValidators if not called by Node
+
+  Contract: SFC
+    Basic functions
+      Constants
+        ✓ Returns current Epoch
+        ✓ Returns minimum amount to stake for a Validator
+        ✓ Returns the maximum ratio of delegations a validator can have
+        ✓ Returns commission fee in percentage a validator will get from a delegation
+        ✓ Returns commission fee in percentage a validator will get from a contract
+        ✓ Returns the ratio of the reward rate at base rate (without lockup)
+        ✓ Returns the minimum duration of a stake/delegation lockup
+        ✓ Returns the maximum duration of a stake/delegation lockup
+        ✓ Returns the period of time that stake is locked
+        ✓ Returns the number of epochs that stake is locked
+        ✓ Returns the version of the current implementation
+        ✓ Should create a Validator and return the ID (99ms)
+        ✓ Should fail to create a Validator insufficient self-stake (39ms)
+        ✓ Should fail if pubkey is empty (40ms)
+        ✓ Should create two Validators and return the correct last validator ID (193ms)
+        ✓ Should return Delegation (118ms)
+        ✓ Should reject if amount is insufficient for self-stake (61ms)
+        ✓ Returns current Epoch
+        ✓ Should return current Sealed Epoch
+        ✓ Should return Now()
+        ✓ Should return getTime()
+      Initialize
+        ✓ Should have been initialized with firstValidator
+      Ownable
+        ✓ Should return the owner of the contract
+        ✓ Should return true if the caller is the owner of the contract
+        ✓ Should return address(0) if owner leaves the contract without owner (58ms)
+        ✓ Should transfer ownership to the new owner (60ms)
+        ✓ Should not be able to transfer ownership if not owner
+        ✓ Should not be able to transfer ownership to address(0)
+      Events emitters
+        ✓ Should call updateNetworkRules
+        ✓ Should call updateOfflinePenaltyThreshold
+
+  Contract: SFC
+    Prevent Genesis Call if not node
+      ✓ Should not be possible add a Genesis Validator if called not by node (53ms)
+      ✓ Should not be possible add a Genesis Delegation if called not by node
+    Create validators
+      ✓ Should create Validators (216ms)
+      ✓ Should return the right ValidatorID by calling getValidatorID (275ms)
+      ✓ Should not be able to stake if Validator not created yet (307ms)
+      ✓ Should stake with different delegators (403ms)
+      ✓ Should return the amount of delegated for each Delegator (704ms)
+      ✓ Should return the total of received Stake (238ms)
+      ✓ Should return the total of received Stake (232ms)
+
+  Contract: SFC
+    Returns Validator
+      ✓ Should returns Validator' status 
+      ✓ Should returns Validator' Deactivated Time
+      ✓ Should returns Validator' Deactivated Epoch
+      ✓ Should returns Validator's Received Stake
+      ✓ Should returns Validator's Created Epoch
+      ✓ Should returns Validator's Created Time
+      ✓ Should returns Validator's Auth (address)
+    EpochSnapshot
+      ✓ Returns stashedRewardsUntilEpoch (267ms)
+    Methods tests
+      ✓ checking createValidator function (395ms)
+      ✓ checking sealing epoch (481ms)
+
+  Contract: SFC
+    Staking / Sealed Epoch functions
+      ✓ Should return claimed Rewards until Epoch (458ms)
+      ✓ Check pending Rewards of delegators (333ms)
+      ✓ Check if pending Rewards have been increased after sealing Epoch (466ms)
+      ✓ Should increase balances after claiming Rewards (415ms)
+      ✓ Should increase stake after restaking Rewards (562ms)
+      ✓ Should increase locked stake after restaking Rewards (643ms)
+      ✓ Should return stashed Rewards (411ms)
+      ✓ Should update the validator on node (48ms)
+      ✓ Should not be able to deactivate validator if not Node (61ms)
+      ✓ Should seal Epochs (187ms)
+      ✓ Should seal Epoch on Validators (167ms)
+    Stake lockup
+      ✓ Check pending Rewards of delegators (301ms)
+      ✓ Check if pending Rewards have been increased after sealing Epoch (473ms)
+      ✓ Should increase balances after claiming Rewards (440ms)
+      ✓ Should return stashed Rewards (438ms)
+      ✓ Should return pending rewards after unlocking and re-locking (3653ms)
+    NodeDriver
+      ✓ Should not be able to call `setGenesisValidator` if not NodeDriver (45ms)
+      ✓ Should not be able to call `setGenesisDelegation` if not NodeDriver
+      ✓ Should not be able to call `deactivateValidator` if not NodeDriver
+      ✓ Should not be able to call `deactivateValidator` with wrong status (40ms)
+      ✓ Should deactivate Validator (41ms)
+      ✓ Should not be able to call `sealEpochValidators` if not NodeDriver
+      ✓ Should not be able to call `sealEpoch` if not NodeDriver (68ms)
+    Epoch getters
+      ✓ should return EpochvalidatorIds
+      ✓ should return the Epoch Received Stake
+      ✓ should return the Epoch Accumulated Reward Per Token
+      ✓ should return the Epoch Accumulated Uptime
+      ✓ should return the Epoch Accumulated Originated Txs Fee
+      ✓ should return the Epoch Offline time 
+      ✓ should return Epoch Offline Blocks
+    Unlock features
+      ✓ should fail if trying to unlock stake if not lockedup
+      ✓ should fail if trying to unlock stake if amount is 0
+false
+      ✓ should return if slashed
+      ✓ should fail if delegating to an unexisting validator (40ms)
+      ✓ should fail if delegating to an unexisting validator (2)
+    SFC Rewards getters / Features
+<BN: 0>
+      ✓ should return stashed rewards
+<BN: 0>
+      ✓ should return locked stake
+<BN: 0>
+      ✓ should return locked stake (2)
+
+  Contract: SFC
+    Staking / Sealed Epoch functions
+      ✓ Should setGenesisDelegation Validator (64ms)
+
+  Contract: SFC
+    Test Rewards Calculation
+      ✓ Calculation of validators rewards should be equal to 30% (245ms)
+      ✓ Should not be able withdraw if request does not exist
+      ✓ Should not be able to undelegate 0 amount (246ms)
+      ✓ Should not be able to undelegate if not enough unlocked stake (246ms)
+      ✓ Should not be able to unlock if not enough unlocked stake (302ms)
+      ✓ should return the unlocked stake (220ms)
+      ✓ Should not be able to claim Rewards if 0 rewards (515ms)
+
+  Contract: SFC
+    Test Calculation Rewards with Lockup
+      ✓ Should not be able to lock 0 amount (218ms)
+      ✓ Should not be able to lock more than a year (270ms)
+      ✓ Should not be able to lock more than validator lockup period (273ms)
+      ✓ Should not be able to lock more than validator lockup period (260ms)
+      ✓ Should be able to lock for 1 month (417ms)
+      ✓ Should not unlock if not locked up FTM (453ms)
+      ✓ Should not be able to unlock more than locked stake (464ms)
+      ✓ Should unlock after period ended and stash rewards (834ms)
+
+  Contract: SFC
+    Test Rewards with lockup Calculation
+      ✓ Should not update slashing refund ratio (377ms)
+      ✓ Should not sync if validator does not exist
+
+
+  125 passing (2m)
 ```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.com/gotbitio/blockchain/backspace/blockchains/vinu/vinu-contracts/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thank you to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
