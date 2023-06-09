@@ -69,6 +69,15 @@ contract SFCLib is SFCBase {
         return stakes_;
     }
 
+    function getWrRequests(address delegator, uint256 validatorID, uint256 offset, uint256 limit) external view returns (WithdrawalRequest[] memory) {
+        WithdrawalRequest[] memory requests_ = new WithdrawalRequest[](limit);
+        for (uint256 i; i < limit; ) {
+            requests_[i] = getWithdrawalRequest[delegator][validatorID][offset + i];
+            ++i;
+        }
+        return requests_;
+    }
+
     /*
     Constructor
     */
@@ -219,7 +228,7 @@ contract SFCLib is SFCBase {
         _recountVotes(delegator, getValidator[toValidatorID].auth, strict);
     }
 
-    function undelegate(uint256 toValidatorID, uint256 wrID, uint256 amount) public {
+    function undelegate(uint256 toValidatorID, uint256 amount) public {
         address delegator = msg.sender;
 
         _stashRewards(delegator, toValidatorID);
@@ -228,7 +237,8 @@ contract SFCLib is SFCBase {
         require(amount <= getUnlockedStake(delegator, toValidatorID), "not enough unlocked stake");
         require(_checkAllowedToWithdraw(delegator, toValidatorID), "outstanding sFTM balance");
 
-        require(getWithdrawalRequest[delegator][toValidatorID][wrID].amount == 0, "wrID already exists");
+        uint256 wrID = wrIdCount[delegator][toValidatorID]++;
+        require(getWithdrawalRequest[delegator][toValidatorID][wrID].amount == 0, "wrID already exists"); // @todo can be deleted
 
         _rawUndelegate(delegator, toValidatorID, amount, true);
 

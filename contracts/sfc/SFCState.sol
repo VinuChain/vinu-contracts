@@ -117,4 +117,6 @@ contract SFCState is Initializable, Ownable {
 
     Stake[] public stakes;
     mapping(address => mapping(uint256 => uint256)) internal stakePosition;
+
+    mapping(address => mapping(uint256 => uint256)) internal wrIdCount;
 }
