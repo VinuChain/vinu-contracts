@@ -1,3 +1,4 @@
+pragma experimental ABIEncoderV2;
 pragma solidity ^0.5.0;
 
 import "./GasPriceConstants.sol";
@@ -49,6 +50,14 @@ contract SFC is SFCBase, Version {
         totalSupply = _totalSupply;
         minGasPrice = GP.initialMinGasPrice();
         getEpochSnapshot[sealedEpoch].endTime = _now();
+        stakes.push(
+            Stake({
+                delegator: address(0), 
+                validatorId: 0, 
+                amount: 0,
+                timestamp: 0
+            })
+        );
     }
 
     function updateStakeTokenizerAddress(address addr) onlyOwner external {

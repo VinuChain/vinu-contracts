@@ -1,3 +1,4 @@
+pragma experimental ABIEncoderV2;
 pragma solidity ^0.5.0;
 
 import "./NodeDriver.sol";
@@ -106,4 +107,14 @@ contract SFCState is Initializable, Ownable {
     ConstantsManager internal c;
 
     address public voteBookAddress;
+
+    struct Stake {
+        address delegator;
+        uint256 validatorId;
+        uint256 amount;
+        uint256 timestamp;
+    }
+
+    Stake[] public stakes;
+    mapping(address => mapping(uint256 => uint256)) internal stakePosition;
 }

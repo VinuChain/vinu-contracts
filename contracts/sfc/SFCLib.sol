@@ -1,3 +1,4 @@
+pragma experimental ABIEncoderV2;
 pragma solidity ^0.5.0;
 
 import "../common/Decimal.sol";
@@ -55,6 +56,17 @@ contract SFCLib is SFCBase {
     function rewardsStash(address delegator, uint256 validatorID) public view returns (uint256) {
         Rewards memory stash = _rewardsStash[delegator][validatorID];
         return stash.lockupBaseReward.add(stash.lockupExtraReward).add(stash.unlockedReward);
+    }
+
+    function getStakes(uint256 offset, uint256 limit) external view returns (Stake[] memory) {
+        uint256 length = stakes.length;
+        Stake[] memory stakes_ = new Stake[](limit);
+        for (uint256 i; i < limit; ) {
+            if (offset + i >= length) break;
+            stakes_[i] = stakes[offset + i];
+            ++i;
+        }
+        return stakes_;
     }
 
     /*
@@ -144,6 +156,22 @@ contract SFCLib is SFCBase {
 
         _stashRewards(delegator, toValidatorID);
 
+        uint256 stakePos = stakePosition[delegator][toValidatorID];
+        if (stakePos == 0) {
+            stakePosition[delegator][toValidatorID] = stakes.length;
+            stakes.push(
+                Stake({
+                    delegator: delegator,
+                    validatorId: toValidatorID,
+                    amount: amount,
+                    timestamp: block.timestamp
+                })
+            );
+        } else {
+            stakes[stakePos].amount = stakes[stakePos].amount.add(amount);
+            stakes[stakePos].timestamp = block.timestamp;
+        }
+
         getStake[delegator][toValidatorID] = getStake[delegator][toValidatorID].add(amount);
         uint256 origStake = getValidator[toValidatorID].receivedStake;
         getValidator[toValidatorID].receivedStake = origStake.add(amount);
@@ -165,6 +193,12 @@ contract SFCLib is SFCBase {
     }
 
     function _rawUndelegate(address delegator, uint256 toValidatorID, uint256 amount, bool strict) internal {
+        uint256 stakePos = stakePosition[delegator][toValidatorID];
+        stakes[stakePos].amount = stakes[stakePos].amount.sub(amount);
+        if (stakes[stakePos].amount == 0) {
+            _removeStake(stakePos);
+        }
+
         getStake[delegator][toValidatorID] -= amount;
         getValidator[toValidatorID].receivedStake = getValidator[toValidatorID].receivedStake.sub(amount);
         totalStake = totalStake.sub(amount);
@@ -205,6 +239,17 @@ contract SFCLib is SFCBase {
         _syncValidator(toValidatorID, false);
 
         emit Undelegated(delegator, toValidatorID, wrID, amount);
+    }
+
+    function _removeStake(uint256 position) internal {
+        uint256 lastPos = stakes.length.sub(1);
+        if (position != lastPos) {
+            stakes[position] = stakes[lastPos];
+
+            Stake memory lastStake = stakes[lastPos];
+            stakePosition[lastStake.delegator][lastStake.validatorId] = position;
+        }
+        stakes.pop();
     }
 
     function isSlashed(uint256 validatorID) view public returns (bool) {

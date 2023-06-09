@@ -1,3 +1,4 @@
+pragma experimental ABIEncoderV2;
 pragma solidity ^0.5.0;
 
 import "../sfc/SFC.sol";
@@ -93,6 +94,12 @@ contract UnitTestNetworkInitializer {
 }
 
 interface SFCUnitTestI {
+    struct Stake {
+        address delegator;
+        uint256 validatorId;
+        uint256 amount;
+        uint256 timestamp;
+    }
 
     function currentSealedEpoch() external view returns (uint256);
 
@@ -151,6 +158,8 @@ interface SFCUnitTestI {
     function constsAddress() external view returns (address);
 
     function getEpochValidatorIDs(uint256 epoch) external view returns (uint256[] memory);
+
+    function getStakes(uint256 offset, uint256 limit) external view returns (Stake[] memory);
 
     function getEpochReceivedStake(uint256 epoch, uint256 validatorID) external view returns (uint256);
 
