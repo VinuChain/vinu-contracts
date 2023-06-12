@@ -1571,31 +1571,83 @@ contract('SFC', async ([firstValidator, testValidator, firstDelegator, secondDel
             await expectRevert(this.sfc.withdraw(testValidator1ID, 0), "request doesn't exist");
         });
 
-        it('Get stakes should correctly work after undelegate', async () => {
+        it('Get stakes/get wr requests should correctly work after undelegate', async () => {
             await sealEpoch(this.sfc, (new BN(10000)).toString());
 
             await this.sfc.delegate(testValidator3ID, {
                 from: thirdDelegator,
-                value: amount18('1'),
+                value: amount18('0.5'),
             });
-            await this.sfc.undelegate(testValidator3ID, 0, amount18('1'), { from: thirdDelegator })
 
-            const wrRequests = await this.sfc.getWrRequests(thirdDelegator, testValidator3ID, 0, 5)
-            const wrRequest = wrRequests[0]
+            let stakes = (await this.sfc.getStakes(0, 10)).slice(1)
+            expect(stakes[3].delegator).eq(thirdDelegator)
+            expect(stakes[3].validatorId).eq(testValidator3ID.toString())
+            expect(stakes[3].amount).eq(amount18('0.5').toString())
 
-            expect(wrRequest.amount).eq(amount18('1').toString())
+            await this.sfc.delegate(testValidator3ID, {
+                from: thirdDelegator,
+                value: amount18('0.5'),
+            });
+
+            await this.sfc.delegate(testValidator3ID, {
+                from: secondDelegator,
+                value: amount18('0.11'),
+            });
+
+            stakes = (await this.sfc.getStakes(0, 10)).slice(1)
+            expect(stakes[3].delegator).eq(thirdDelegator)
+            expect(stakes[3].validatorId).eq(testValidator3ID.toString())
+            expect(stakes[3].amount).eq(amount18('1').toString())
+
+            await this.sfc.undelegate(testValidator3ID, amount18('0.7'), { from: thirdDelegator })
+
+            let wrRequests = await this.sfc.getWrRequests(thirdDelegator, testValidator3ID, 0, 5)
+            expect(wrRequests[0].amount).eq(amount18('0.7').toString())
+
+            stakes = (await this.sfc.getStakes(0, 10)).slice(1)
+            expect(stakes[3].delegator).eq(thirdDelegator)
+            expect(stakes[3].validatorId).eq(testValidator3ID.toString())
+            expect(stakes[3].amount).eq(amount18('0.3').toString())
+
+            expect(stakes[4].delegator).eq(secondDelegator)
+            expect(stakes[4].validatorId).eq(testValidator3ID.toString())
+            expect(stakes[4].amount).eq(amount18('0.11').toString())
+
+            await this.sfc.undelegate(testValidator3ID, amount18('0.3'), { from: thirdDelegator })
+
+            wrRequests = await this.sfc.getWrRequests(thirdDelegator, testValidator3ID, 0, 5)
+            expect(wrRequests[0].amount).eq(amount18('0.7').toString())
+            expect(wrRequests[1].amount).eq(amount18('0.3').toString())
+
+            stakes = (await this.sfc.getStakes(0, 10)).slice(1)
+            expect(stakes[3].delegator).eq(secondDelegator)
+            expect(stakes[3].validatorId).eq(testValidator3ID.toString())
+            expect(stakes[3].amount).eq(amount18('0.11').toString())
+
+            expect(stakes[4].delegator).eq(zeroAddr)
+            expect(stakes[4].validatorId).eq('0')
+            expect(stakes[4].amount).eq('0')
+
+            await this.sfc.delegate(testValidator3ID, {
+                from: secondDelegator,
+                value: amount18('0.11'),
+            });
+            stakes = (await this.sfc.getStakes(0, 10)).slice(1)
+            expect(stakes[3].delegator).eq(secondDelegator)
+            expect(stakes[3].validatorId).eq(testValidator3ID.toString())
+            expect(stakes[3].amount).eq(amount18('0.22').toString())
         });
 
         it('Should not be able to undelegate 0 amount', async () => {
             await sealEpoch(this.sfc, (new BN(1000)).toString());
 
-            await expectRevert(this.sfc.undelegate(testValidator1ID, 0, 0), 'zero amount');
+            await expectRevert(this.sfc.undelegate(testValidator1ID, 0), 'zero amount');
         });
 
         it('Should not be able to undelegate if not enough unlocked stake', async () => {
             await sealEpoch(this.sfc, (new BN(1000)).toString());
 
-            await expectRevert(this.sfc.undelegate(testValidator1ID, 0, 10), 'not enough unlocked stake');
+            await expectRevert(this.sfc.undelegate(testValidator1ID, 10), 'not enough unlocked stake');
         });
 
         it('Should not be able to unlock if not enough unlocked stake', async () => {

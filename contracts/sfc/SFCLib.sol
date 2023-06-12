@@ -238,7 +238,6 @@ contract SFCLib is SFCBase {
         require(_checkAllowedToWithdraw(delegator, toValidatorID), "outstanding sFTM balance");
 
         uint256 wrID = wrIdCount[delegator][toValidatorID]++;
-        require(getWithdrawalRequest[delegator][toValidatorID][wrID].amount == 0, "wrID already exists"); // @todo can be deleted
 
         _rawUndelegate(delegator, toValidatorID, amount, true);
 
