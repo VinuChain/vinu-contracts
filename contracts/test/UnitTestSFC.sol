@@ -101,6 +101,12 @@ interface SFCUnitTestI {
         uint256 timestamp;
     }
 
+    struct WithdrawalRequest {
+        uint256 epoch;
+        uint256 time;
+        uint256 amount;
+    }
+
     function currentSealedEpoch() external view returns (uint256);
 
     function getEpochSnapshot(uint256) external view returns (uint256 endTime, uint256 epochFee, uint256 totalBaseRewardWeight, uint256 totalTxRewardWeight, uint256 _baseRewardPerSecond, uint256 totalStake, uint256 totalSupply);
@@ -161,6 +167,8 @@ interface SFCUnitTestI {
 
     function getStakes(uint256 offset, uint256 limit) external view returns (Stake[] memory);
 
+    function getWrRequests(address delegator, uint256 validatorID, uint256 offset, uint256 limit) external view returns (WithdrawalRequest[] memory);
+
     function getEpochReceivedStake(uint256 epoch, uint256 validatorID) external view returns (uint256);
 
     function getEpochAccumulatedRewardPerToken(uint256 epoch, uint256 validatorID) external view returns (uint256);
@@ -183,7 +191,7 @@ interface SFCUnitTestI {
 
     function delegate(uint256 toValidatorID) external payable;
 
-    function undelegate(uint256 toValidatorID, uint256 wrID, uint256 amount) external;
+    function undelegate(uint256 toValidatorID, uint256 amount) external;
 
     function isSlashed(uint256 validatorID) external view returns (bool);
 

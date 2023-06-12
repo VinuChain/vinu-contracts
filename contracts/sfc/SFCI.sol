@@ -80,7 +80,7 @@ interface SFCI {
 
     function delegate(uint256 toValidatorID) external payable;
 
-    function undelegate(uint256 toValidatorID, uint256 wrID, uint256 amount) external;
+    function undelegate(uint256 toValidatorID, uint256 amount) external;
 
     function isSlashed(uint256 validatorID) external view returns (bool);
 
