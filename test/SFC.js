@@ -1571,6 +1571,21 @@ contract('SFC', async ([firstValidator, testValidator, firstDelegator, secondDel
             await expectRevert(this.sfc.withdraw(testValidator1ID, 0), "request doesn't exist");
         });
 
+        it('Get stakes should correctly work after undelegate', async () => {
+            await sealEpoch(this.sfc, (new BN(10000)).toString());
+
+            await this.sfc.delegate(testValidator3ID, {
+                from: thirdDelegator,
+                value: amount18('1'),
+            });
+            await this.sfc.undelegate(testValidator3ID, 0, amount18('1'), { from: thirdDelegator })
+
+            const wrRequests = await this.sfc.getWrRequests(thirdDelegator, testValidator3ID, 0, 5)
+            const wrRequest = wrRequests[0]
+
+            expect(wrRequest.amount).eq(amount18('1').toString())
+        });
+
         it('Should not be able to undelegate 0 amount', async () => {
             await sealEpoch(this.sfc, (new BN(1000)).toString());
 
