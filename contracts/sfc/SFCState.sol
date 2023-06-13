@@ -1,3 +1,4 @@
+pragma experimental ABIEncoderV2;
 pragma solidity ^0.5.0;
 
 import "./NodeDriver.sol";
@@ -13,11 +14,9 @@ contract SFCState is Initializable, Ownable {
         uint256 status;
         uint256 deactivatedTime;
         uint256 deactivatedEpoch;
-
         uint256 receivedStake;
         uint256 createdEpoch;
         uint256 createdTime;
-
         address auth;
     }
 
@@ -41,16 +40,17 @@ contract SFCState is Initializable, Ownable {
 
     mapping(address => mapping(uint256 => Rewards)) internal _rewardsStash; // addr, validatorID -> Rewards
 
-    mapping(address => mapping(uint256 => uint256)) public stashedRewardsUntilEpoch;
+    mapping(address => mapping(uint256 => uint256))
+        public stashedRewardsUntilEpoch;
 
     struct WithdrawalRequest {
         uint256 epoch;
         uint256 time;
-
         uint256 amount;
     }
 
-    mapping(address => mapping(uint256 => mapping(uint256 => WithdrawalRequest))) public getWithdrawalRequest;
+    mapping(address => mapping(uint256 => mapping(uint256 => WithdrawalRequest)))
+        public getWithdrawalRequest;
 
     struct LockedDelegation {
         uint256 lockedStake;
@@ -61,9 +61,11 @@ contract SFCState is Initializable, Ownable {
 
     mapping(address => mapping(uint256 => uint256)) public getStake;
 
-    mapping(address => mapping(uint256 => LockedDelegation)) public getLockupInfo;
+    mapping(address => mapping(uint256 => LockedDelegation))
+        public getLockupInfo;
 
-    mapping(address => mapping(uint256 => Rewards)) public getStashedLockupRewards;
+    mapping(address => mapping(uint256 => Rewards))
+        public getStashedLockupRewards;
 
     struct EpochSnapshot {
         mapping(uint256 => uint256) receivedStake;
@@ -72,9 +74,7 @@ contract SFCState is Initializable, Ownable {
         mapping(uint256 => uint256) accumulatedOriginatedTxsFee;
         mapping(uint256 => uint256) offlineTime;
         mapping(uint256 => uint256) offlineBlocks;
-
         uint256[] validatorIDs;
-
         uint256 endTime;
         uint256 epochFee;
         uint256 totalBaseRewardWeight;
@@ -106,4 +106,16 @@ contract SFCState is Initializable, Ownable {
     ConstantsManager internal c;
 
     address public voteBookAddress;
+
+    struct Stake {
+        address delegator;
+        uint256 validatorId;
+        uint256 amount;
+        uint256 timestamp;
+    }
+
+    Stake[] public stakes;
+    mapping(address => mapping(uint256 => uint256)) internal stakePosition;
+
+    mapping(address => mapping(uint256 => uint256)) internal wrIdCount;
 }
