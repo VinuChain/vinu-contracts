@@ -551,49 +551,6 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, firstDe
             expect(stakes[5].amount).eq(amount18('10').toString())
         });
 
-        // it('Get stakes should correctly work after undelegate', async () => {
-        //     await expect(this.sfc.createValidator(pubkey, {
-        //         from: firstValidator,
-        //         value: amount18('10'),
-        //     })).to.be.fulfilled;
-        //     expect(await this.sfc.delegate(1, { from: firstDelegator, value: amount18('11') }));
-
-        //     await expect(this.sfc.createValidator(pubkey, {
-        //         from: secondValidator,
-        //         value: amount18('15'),
-        //     })).to.be.fulfilled;
-        //     expect(await this.sfc.delegate(2, { from: secondDelegator, value: amount18('10') }));
-
-        //     await expect(this.sfc.createValidator(pubkey, {
-        //         from: thirdValidator,
-        //         value: amount18('20'),
-        //     })).to.be.fulfilled;
-        //     expect(await this.sfc.delegate(3, { from: thirdDelegator, value: amount18('10') }));
-            
-        //     await sealEpoch(this.sfc, (new BN(0)).toString());
-        //     await sealEpoch(this.sfc, (new BN(10000)).toString());
-
-        //     await this.sfc.undelegate(1, 0, amount18('10'), { from: firstDelegator })
-
-        //     let stakes = await this.sfc.getStakes(0, 10)
-        //     stakes = stakes.slice(1)
-        //     console.log("1 stakes", stakes);
-
-        //     expect(stakes[1].delegator).eq(firstDelegator)
-        //     expect(stakes[1].validatorId).eq('1')
-        //     expect(stakes[1].amount).eq(amount18('1').toString())
-
-        //     await this.sfc.undelegate(1, 0, amount18('1'), { from: firstDelegator })
-        //     stakes = await this.sfc.getStakes(0, 10)
-        //     stakes = stakes.slice(1)
-
-        //     console.log("2 stakes", stakes);
-
-        //     expect(stakes[1].delegator).eq(thirdDelegator)
-        //     expect(stakes[1].validatorId).eq('3')
-        //     expect(stakes[1].amount).eq(amount18('10').toString())
-        // });
-
         it('Should return the amount of delegated for each Delegator', async () => {
             await expect(this.sfc.createValidator(pubkey, {
                 from: firstValidator,
