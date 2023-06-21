@@ -3,7 +3,6 @@ pragma solidity ^0.5.0;
 
 import "./SFCI.sol";
 import "./NodeDriver.sol";
-import "./SFCLib.sol";
 import "./ConstantsManager.sol";
 
 contract NetworkInitializer {
@@ -12,7 +11,6 @@ contract NetworkInitializer {
         uint256 sealedEpoch,
         uint256 totalSupply,
         address payable _sfc,
-        address _lib,
         address _auth,
         address _driver,
         address _evmWriter,
@@ -44,7 +42,6 @@ contract NetworkInitializer {
             sealedEpoch,
             totalSupply,
             _auth,
-            _lib,
             address(consts),
             _owner
         );

@@ -2,6 +2,19 @@ pragma experimental ABIEncoderV2;
 pragma solidity ^0.5.0;
 
 interface SFCI {
+    struct Stake {
+        address delegator;
+        uint256 validatorId;
+        uint256 amount;
+        uint256 timestamp;
+    }
+
+    struct WithdrawalRequest {
+        uint256 epoch;
+        uint256 time;
+        uint256 amount;
+    }
+
     function currentSealedEpoch() external view returns (uint256);
 
     function getEpochSnapshot(
@@ -33,6 +46,18 @@ interface SFCI {
         );
 
     function getStake(address, uint256) external view returns (uint256);
+
+    function getStakes(
+        uint256 offset,
+        uint256 limit
+    ) external view returns (Stake[] memory);
+
+    function getWrRequests(
+        address delegator,
+        uint256 validatorID,
+        uint256 offset,
+        uint256 limit
+    ) external view returns (WithdrawalRequest[] memory);
 
     function getStashedLockupRewards(
         address,
@@ -244,7 +269,6 @@ interface SFCI {
         uint256 sealedEpoch,
         uint256 _totalSupply,
         address nodeDriver,
-        address lib,
         address consts,
         address _owner
     ) external;

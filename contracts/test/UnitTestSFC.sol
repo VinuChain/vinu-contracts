@@ -3,7 +3,6 @@ pragma solidity ^0.5.0;
 
 import "../sfc/SFC.sol";
 import "../sfc/SFCI.sol";
-import "../sfc/SFCLib.sol";
 
 contract UnitTestSFCBase {
     uint256 internal time;
@@ -45,25 +44,12 @@ contract UnitTestSFC is SFC, UnitTestSFCBase {
         }
         return SFCBase.isNode(addr);
     }
-}
 
-contract UnitTestSFCLib is SFCLib, UnitTestSFCBase {
     function highestLockupEpoch(
         address delegator,
         uint256 validatorID
     ) external view returns (uint256) {
         return _highestLockupEpoch(delegator, validatorID);
-    }
-
-    function _now() internal view returns (uint256) {
-        return time;
-    }
-
-    function isNode(address addr) internal view returns (bool) {
-        if (allowedNonNodeCalls) {
-            return true;
-        }
-        return SFCBase.isNode(addr);
     }
 }
 
@@ -72,7 +58,6 @@ contract UnitTestNetworkInitializer {
         uint256 sealedEpoch,
         uint256 totalSupply,
         address payable _sfc,
-        address _lib,
         address _auth,
         address _driver,
         address _evmWriter,
@@ -104,7 +89,6 @@ contract UnitTestNetworkInitializer {
             sealedEpoch,
             totalSupply,
             _auth,
-            _lib,
             address(consts),
             _owner
         );
@@ -387,7 +371,6 @@ interface SFCUnitTestI {
         uint256 sealedEpoch,
         uint256 _totalSupply,
         address nodeDriver,
-        address lib,
         address consts,
         address _owner
     ) external;
