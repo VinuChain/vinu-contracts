@@ -17,10 +17,10 @@ contract StakeTokenizer is Spacer, Initializable {
 
     address public sFTMTokenAddress;
 
-    function initialize(
-        address payable _sfc,
-        address _sFTMTokenAddress
-    ) public initializer {
+    function initialize(address _sfc, address _sFTMTokenAddress)
+        public
+        initializer
+    {
         sfc = SFC(_sfc);
         sFTMTokenAddress = _sFTMTokenAddress;
     }
@@ -60,10 +60,11 @@ contract StakeTokenizer is Spacer, Initializable {
         ERC20Burnable(sFTMTokenAddress).burnFrom(msg.sender, amount);
     }
 
-    function allowedToWithdrawStake(
-        address sender,
-        uint256 validatorID
-    ) public view returns (bool) {
+    function allowedToWithdrawStake(address sender, uint256 validatorID)
+        public
+        view
+        returns (bool)
+    {
         return outstandingSFTM[sender][validatorID] == 0;
     }
 }
