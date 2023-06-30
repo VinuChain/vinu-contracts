@@ -8,13 +8,13 @@ const chaiAsPromised = require('chai-as-promised');
 
 chai.use(chaiAsPromised);
 const UnitTestSFC = artifacts.require('UnitTestSFC');
-const UnitTestSFCLib = artifacts.require('UnitTestSFC');
+// const UnitTestSFCLib = artifacts.require('UnitTestSFC');
 const SFCI = artifacts.require('SFCUnitTestI');
 const NodeDriverAuth = artifacts.require('NodeDriverAuth');
 const NodeDriver = artifacts.require('NodeDriver');
 const NetworkInitializer = artifacts.require('UnitTestNetworkInitializer');
 const StubEvmWriter = artifacts.require('StubEvmWriter');
-const ConstantsManager = artifacts.require('ConstantsManager');
+// const ConstantsManager = artifacts.require('ConstantsManager');
 
 function amount18(n) {
     return new BN(web3.utils.toWei(n, 'ether'));
@@ -130,7 +130,7 @@ contract('SFC', async ([account1, account2]) => {
         // this.sfcLib = this.sfc
         const initializer = await NetworkInitializer.new();
         await initializer.initializeAll(12, 0, this.sfc.address, this.nodeI.address, nodeIRaw.address, evmWriter.address, account1);
-        this.consts = await ConstantsManager.at(await this.sfc.constsAddress.call());
+        // this.consts = await ConstantsManager.at(await this.sfc.constsAddress.call());
     });
 
     describe('Nde', () => {
