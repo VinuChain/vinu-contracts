@@ -311,8 +311,7 @@ interface SFCUnitTestI {
         uint256[] calldata offlineTime,
         uint256[] calldata offlineBlocks,
         uint256[] calldata uptimes,
-        uint256[] calldata originatedTxsFee,
-        uint256 epochGas
+        uint256[] calldata originatedTxsFee
     ) external;
 
     function sealEpochValidators(uint256[] calldata nextValidatorIDs) external;
@@ -398,4 +397,22 @@ interface SFCUnitTestI {
     function updateVoteBookAddress(address v) external;
 
     function voteBookAddress(address v) external view returns (address);
+
+    function minSelfStake() external pure returns (uint256);
+
+    function maxDelegatedRatio() external pure returns (uint256);
+
+    function validatorCommission() external pure returns (uint256);
+
+    function contractCommission() external pure returns (uint256);
+
+    function unlockedRewardRatio() external pure returns (uint256);
+
+    function minLockupDuration() external pure returns (uint256);
+
+    function maxLockupDuration() external pure returns (uint256);
+
+    function withdrawalPeriodEpochs() external pure returns (uint256);
+
+    function withdrawalPeriodTime() external pure returns (uint256);
 }

@@ -44,11 +44,18 @@ module.exports = {
         //
         // development: {
         // },
+        test: {
+            network_id: '*',
+            host: '127.0.0.1',
+            port: '8545',
+            defaultEtherBalance: 500,
+        },
         coverage: {
             host: '127.0.0.1',
             port: 8555,
             network_id: '*', // Any network (default: none)
             defaultEtherBalance: 500,
+            blockGasLimit: 0xffffffffffffff,
         },
         // Another network with more advanced options...
         // advanced: {
