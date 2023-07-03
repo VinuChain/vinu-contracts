@@ -329,7 +329,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     /**
      * @dev Getting epoch's delegator locked stake
      * @param delegator Delegator to check
-     * @param validatorID Validator to check
+     * @param toValidatorID Validator to check
      * @return Validator's Epoch's delegator locked stake
      */
     function getLockedStake(address delegator, uint256 toValidatorID)
@@ -425,7 +425,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
 
     /**
      * @dev Setting genesis validator
-     * @param _auth Validator auth
+     * @param auth Validator auth
      * @param validatorID Validator ID
      * @param pubkey Validator pubkey
      * @param status Validator status
@@ -732,7 +732,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     /**
      * @dev Unstaking amount for validator (without withdraw)
      * @param toValidatorID Validator ID
-     * @amount Amount to unstake
+     * @param amount Amount to unstake
      */
     function undelegate(
         uint256 toValidatorID,
@@ -1487,7 +1487,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
 
     /**
      * @dev Sealing the info about epoch
-     * @param offlineTimes Validators offline time
+     * @param offlineTime Validators offline time
      * @param offlineBlocks Validators offline blocks
      * @param uptimes Validators uptimes
      * @param originatedTxsFee Fees info
@@ -1583,7 +1583,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     /**
      * @dev Getting the unlocked stake amount
      * @param delegator Delegator address
-     * @param toValidatorID 
+     * @param toValidatorID Validator ID
      */
     function getUnlockedStake(address delegator, uint256 toValidatorID)
         public

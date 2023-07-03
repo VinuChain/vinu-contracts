@@ -306,7 +306,7 @@ contract NodeDriver is Initializable {
     /**
      * @dev Setting native balance
      * @param acc Address to set
-     * @param diff How much to set
+     * @param value How much to set
      */
     function setBalance(address acc, uint256 value) external onlyBackend {
         evmWriter.setBalance(acc, value);
@@ -324,7 +324,7 @@ contract NodeDriver is Initializable {
     /**
      * @dev Upgrading a code of the contract
      * @param acc Contract's address to upgrade
-     * @param from Address of the contract whose code is used for the upgrade
+     * @param with Address of the contract whose code is used for the upgrade
      */
     function swapCode(address acc, address with) external onlyBackend {
         evmWriter.swapCode(acc, with);
