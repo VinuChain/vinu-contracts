@@ -10,9 +10,11 @@ It distributes the rewards, based on internal transaction created by the Opera n
 
 Build output can be found in `build/`
 
-# Test in docker
+# Run tests
 
-1. `make test`
+1. `make`
+2. `yarn ganache-cli --gasLimit 50000000 --gasPrice 0 --allowUnlimitedContractSize --defaultBalanceEther 5000000` (in 1st terminal)
+3. `yarn test`
 
 If everything is all right, it should output something along this:
 ```

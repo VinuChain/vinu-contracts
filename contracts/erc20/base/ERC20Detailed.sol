@@ -5,6 +5,7 @@ import "./IERC20.sol";
 import "../../common/Initializable.sol";
 
 /**
+ * @title ERC20Detailed
  * @dev Optional functions from the ERC20 standard.
  */
 contract ERC20Detailed is Initializable, IERC20 {

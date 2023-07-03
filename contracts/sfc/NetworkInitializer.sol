@@ -4,8 +4,21 @@ pragma solidity ^0.5.0;
 import "./SFC.sol";
 import "./NodeDriver.sol";
 
+/**
+ * @title NetworkInitializer
+ * @dev Initializer of system contracts
+ */
 contract NetworkInitializer {
-    // Initialize NodeDriverAuth, NodeDriver and SFC in one call to allow fewer genesis transactions
+    /**
+     * @dev Initialize NodeDriverAuth, NodeDriver and SFC in one call to allow fewer genesis transactions
+     * @param sealedEpoch Current sealed epoch
+     * @param totalSupply Native token total supply
+     * @param _sfc SFC contract address
+     * @param _auth NodeDriverAuth contract address
+     * @param _driver NodeDriver contract address
+     * @param _evmWriter EVMWriter contract address
+     * @param _owner Owner
+     */
     function initializeAll(
         uint256 sealedEpoch,
         uint256 totalSupply,

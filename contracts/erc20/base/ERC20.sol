@@ -6,6 +6,8 @@ import "./IERC20.sol";
 import "../../common/Initializable.sol";
 
 /**
+ * @title ERC20
+ * 
  * @dev Implementation of the {IERC20} interface.
  *
  * This implementation is agnostic to the way tokens are created. This means

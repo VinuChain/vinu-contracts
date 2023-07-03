@@ -3,6 +3,8 @@ pragma solidity ^0.5.0;
 import "./Initializable.sol";
 
 /**
+ * @title ReentrancyGuard
+ * 
  * @dev Contract module that helps prevent reentrant calls to a function.
  *
  * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier

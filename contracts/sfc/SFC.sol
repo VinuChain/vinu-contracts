@@ -11,7 +11,8 @@ import "./StakeTokenizer.sol";
 import "./NodeDriver.sol";
 
 /**
- * @dev Stakers contract defines data structure and methods for validators / validators.
+ * @title SFC
+ * @dev Maintains a group of validators and their delegations
  */
 contract SFC is Initializable, Ownable, StakersConstants, Version {
     using SafeMath for uint256;
@@ -204,10 +205,19 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     Getters
     */
 
+    /**
+     * @dev Getting current epoch
+     * @return Current epoch
+     */
     function currentEpoch() public view returns (uint256) {
         return currentSealedEpoch + 1;
     }
 
+    /**
+     * @dev Getting IDs of validators in epoch
+     * @param epoch Epoch to check
+     * @return Validator IDs
+     */
     function getEpochValidatorIDs(uint256 epoch)
         public
         view
@@ -216,6 +226,12 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return getEpochSnapshot[epoch].validatorIDs;
     }
 
+    /**
+     * @dev Getting epoch's validator received stake
+     * @param epoch Epoch to check
+     * @param validatorID Validator to check
+     * @return Amount of received stake
+     */
     function getEpochReceivedStake(uint256 epoch, uint256 validatorID)
         public
         view
@@ -224,6 +240,12 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return getEpochSnapshot[epoch].receivedStake[validatorID];
     }
 
+    /**
+     * @dev Getting epoch's accumulated reward per token
+     * @param epoch Epoch to check
+     * @param validatorID Validator to check
+     * @return Epoch's accumulated reward per token
+     */
     function getEpochAccumulatedRewardPerToken(
         uint256 epoch,
         uint256 validatorID
@@ -231,6 +253,12 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return getEpochSnapshot[epoch].accumulatedRewardPerToken[validatorID];
     }
 
+    /**
+     * @dev Getting epoch's validator accumulated uptime
+     * @param epoch Epoch to check
+     * @param validatorID Validator to check
+     * @return Validator's accumulated uptime
+     */
     function getEpochAccumulatedUptime(uint256 epoch, uint256 validatorID)
         public
         view
@@ -239,6 +267,12 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return getEpochSnapshot[epoch].accumulatedUptime[validatorID];
     }
 
+    /**
+     * @dev Getting epoch's validator accumulated tx fee
+     * @param epoch Epoch to check
+     * @param validatorID Validator to check
+     * @return Validator's Epoch's validator accumulated tx fee
+     */
     function getEpochAccumulatedOriginatedTxsFee(
         uint256 epoch,
         uint256 validatorID
@@ -246,6 +280,12 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return getEpochSnapshot[epoch].accumulatedOriginatedTxsFee[validatorID];
     }
 
+    /**
+     * @dev Getting epoch's validator offline time
+     * @param epoch Epoch to check
+     * @param validatorID Validator to check
+     * @return Validator's Epoch's validator offline time
+     */
     function getEpochOfflineTime(uint256 epoch, uint256 validatorID)
         public
         view
@@ -254,6 +294,12 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return getEpochSnapshot[epoch].offlineTime[validatorID];
     }
 
+    /**
+     * @dev Getting epoch's validator offline blocks
+     * @param epoch Epoch to check
+     * @param validatorID Validator to check
+     * @return Validator's Epoch's validator offline blocks
+     */
     function getEpochOfflineBlocks(uint256 epoch, uint256 validatorID)
         public
         view
@@ -262,6 +308,12 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return getEpochSnapshot[epoch].offlineBlocks[validatorID];
     }
 
+    /**
+     * @dev Getting epoch's delegator rewards stash
+     * @param delegator Delegator to check
+     * @param validatorID Validator to check
+     * @return Validator's epoch's delegator rewards stash
+     */
     function rewardsStash(address delegator, uint256 validatorID)
         public
         view
@@ -274,6 +326,12 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
             );
     }
 
+    /**
+     * @dev Getting epoch's delegator locked stake
+     * @param delegator Delegator to check
+     * @param validatorID Validator to check
+     * @return Validator's Epoch's delegator locked stake
+     */
     function getLockedStake(address delegator, uint256 toValidatorID)
         public
         view
@@ -285,6 +343,12 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return getLockupInfo[delegator][toValidatorID].lockedStake;
     }
 
+    /**
+     * @dev Getting all stakes info
+     * @param offset Offset to start with
+     * @param limit Return size limit
+     * @return All stakes info
+     */
     function getStakes(
         uint256 offset,
         uint256 limit
@@ -299,6 +363,14 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return stakes_;
     }
 
+    /**
+     * @dev Getting withdraw requests info
+     * @param delegator Delegator address
+     * @param validatorID Validator ID
+     * @param offset Offset to start with
+     * @param limit Return size limit
+     * @return Withdraw requests info
+     */
     function getWrRequests(
         address delegator,
         uint256 validatorID,
@@ -319,6 +391,13 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     Constructor
     */
 
+    /**
+     * @dev Initializing the SFC
+     * @param sealedEpoch Current sealed epoch
+     * @param _totalSupply Native token total supply
+     * @param nodeDriver NodeDriverAuth contract
+     * @param owner Owner
+     */
     function initialize(
         uint256 sealedEpoch,
         uint256 _totalSupply,
@@ -344,6 +423,17 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         );
     }
 
+    /**
+     * @dev Setting genesis validator
+     * @param _auth Validator auth
+     * @param validatorID Validator ID
+     * @param pubkey Validator pubkey
+     * @param status Validator status
+     * @param createdEpoch The creation epoch
+     * @param createdTime The creation time
+     * @param deactivatedEpoch The deactivation epoch
+     * @param deactivatedTime The deactivation time
+     */
     function setGenesisValidator(
         address auth,
         uint256 validatorID,
@@ -369,6 +459,18 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         }
     }
 
+    /**
+     * @dev Setting genesis delegation to validator
+     * @param delegator Delegator address
+     * @param toValidatorID Validator ID
+     * @param stake Stake amount
+     * @param lockedStake Locked stake amount
+     * @param lockupFromEpoch Lockup from epoch
+     * @param lockupEndTime Lockup end time
+     * @param lockupDuration Lockup duration
+     * @param earlyUnlockPenalty Early unlock penalty amount
+     * @param rewards Rewards amount
+     */
     function setGenesisDelegation(
         address delegator,
         uint256 toValidatorID,
@@ -410,6 +512,10 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     Methods
     */
 
+    /**
+     * @dev Creating the validator
+     * @param pubkey Validator pubkey
+     */
     function createValidator(bytes calldata pubkey) external payable {
         require(msg.value >= minSelfStake(), "insufficient self-stake");
         require(pubkey.length > 0, "empty pubkey");
@@ -464,6 +570,11 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         }
     }
 
+    /**
+     * @dev Getting the amount of self stake for validator
+     * @param validatorID Validator ID
+     * @return Self stake amount
+     */
     function getSelfStake(uint256 validatorID) public view returns (uint256) {
         return getStake[getValidator[validatorID].auth][validatorID];
     }
@@ -480,6 +591,10 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
             );
     }
 
+    /**
+     * @dev Staking for validator
+     * @param toValidatorID Validator ID
+     */
     function delegate(uint256 toValidatorID) external payable {
         _delegate(msg.sender, toValidatorID, msg.value);
     }
@@ -614,6 +729,11 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         stakes.pop();
     }
 
+    /**
+     * @dev Unstaking amount for validator (without withdraw)
+     * @param toValidatorID Validator ID
+     * @amount Amount to unstake
+     */
     function undelegate(
         uint256 toValidatorID,
         uint256 amount
@@ -646,6 +766,11 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         emit Undelegated(delegator, toValidatorID, wrID, amount);
     }
 
+    /**
+     * @dev If the validator is slashed, there is a penalty for withdraw
+     * @param validatorID Validator ID
+     * @return Is the validator slashed
+     */
     function isSlashed(uint256 validatorID) public view returns (bool) {
         return getValidator[validatorID].status & CHEATER_MASK != 0;
     }
@@ -669,6 +794,11 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return penalty;
     }
 
+    /**
+     * @dev Withdrawing unstaked amount
+     * @param toValidatorID Validator ID
+     * @param wrID Undelegate request ID
+     */
     function withdraw(uint256 toValidatorID, uint256 wrID) public {
         address payable delegator = msg.sender;
         WithdrawalRequest memory request = getWithdrawalRequest[delegator][
@@ -718,6 +848,11 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         emit Withdrawn(delegator, toValidatorID, wrID, amount);
     }
 
+    /**
+     * @dev Deactivating the validator
+     * @param validatorID Validator ID
+     * @param status New validator status
+     */
     function deactivateValidator(uint256 validatorID, uint256 status)
         external
         onlyDriver
@@ -940,6 +1075,12 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return sumRewards(_rewardsStash[delegator][toValidatorID], reward);
     }
 
+    /**
+     * @dev Getting the amount of pending rewards for validator
+     * @param delegator Delegator address
+     * @param toValidatorID Validator ID
+     * @return Amount of pending rewards
+     */
     function pendingRewards(address delegator, uint256 toValidatorID)
         public
         view
@@ -952,6 +1093,11 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
             );
     }
 
+    /**
+     * @dev Stashing rewards for validator
+     * @param delegator Delegator address
+     * @param toValidatorID Validator ID
+     */
     function stashRewards(address delegator, uint256 toValidatorID) external {
         require(_stashRewards(delegator, toValidatorID), "nothing to stash");
     }
@@ -1005,6 +1151,10 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return rewards;
     }
 
+    /**
+     * @dev Claiming rewards
+     * @param toValidatorID Validator ID
+     */
     function claimRewards(uint256 toValidatorID) public {
         address payable delegator = msg.sender;
         Rewards memory rewards = _claimRewards(delegator, toValidatorID);
@@ -1025,6 +1175,10 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         );
     }
 
+    /**
+     * @dev Restaking rewards
+     * @param toValidatorID Validator ID
+     */
     function restakeRewards(uint256 toValidatorID) public {
         address delegator = msg.sender;
         Rewards memory rewards = _claimRewards(delegator, toValidatorID);
@@ -1072,6 +1226,11 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return getValidator[validatorID].createdTime != 0;
     }
 
+    /**
+     * @dev Getting the info about offline penalty threshold
+     * @return blocksNum Amount of blocks
+     * @return time Threshold time
+     */
     function offlinePenaltyThreshold()
         public
         view
@@ -1080,6 +1239,10 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return (offlinePenaltyThresholdBlocksNum, offlinePenaltyThresholdTime);
     }
 
+    /**
+     * @dev Updating base reward per second value
+     * @param value New base reward
+     */
     function updateBaseRewardPerSecond(uint256 value) external onlyOwner {
         require(
             value <= 32.967977168935185184 * 1e18,
@@ -1089,6 +1252,11 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         emit UpdatedBaseRewardPerSec(value);
     }
 
+    /**
+     * @dev Updating offline penalty threshold blocks and time
+     * @param blocksNum Number of blocks
+     * @param time Threshold time
+     */
     function updateOfflinePenaltyThreshold(uint256 blocksNum, uint256 time)
         external
         onlyOwner
@@ -1098,6 +1266,11 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         emit UpdatedOfflinePenaltyThreshold(blocksNum, time);
     }
 
+    /**
+     * @dev Updating slashing refund ratio
+     * @param validatorID Validator ID
+     * @param refundRatio Refund ratio
+     */
     function updateSlashingRefundRatio(uint256 validatorID, uint256 refundRatio)
         external
         onlyOwner
@@ -1111,12 +1284,20 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         emit UpdatedSlashingRefundRatio(validatorID, refundRatio);
     }
 
+    /**
+     * @dev Updating StakeTokenizer contract address
+     * @param addr StakeTokenizer contract address
+     */
     function updateStakeTokenizerAddress(address addr) external onlyOwner {
         stakeTokenizerAddress = addr;
     }
 
-    // updateTotalSupply allows to fix the different between actual total supply and totalSupply field due to the
-    // bug fixed in 3c828b56b7cd32ea058a954fad3cd726e193cc77
+    /**
+     * @dev UpdateTotalSupply allows to fix the different between actual 
+     * total supply and totalSupply field due to the
+     * bug fixed in 3c828b56b7cd32ea058a954fad3cd726e193cc77
+     * @param diff Total supply diff
+     */
     function updateTotalSupply(int256 diff) external onlyOwner {
         if (diff >= 0) {
             totalSupply += uint256(diff);
@@ -1125,8 +1306,14 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         }
     }
 
-    // mintFTM allows SFC owner to mint an arbitrary amount of FTM tokens
-    // justification is a human readable description of why tokens were minted (e.g. because ERC20 FTM tokens were burnt)
+    /**
+     * @dev MintFTM allows SFC owner to mint an arbitrary amount of 
+     * FTM tokens. Justification is a human readable description of 
+     * why tokens were minted (e.g. because ERC20 FTM tokens were burnt).
+     * @param receiver Receiver address
+     * @param amount Amount to mint
+     * @param justification Extra info
+     */
     function mintFTM(
         address payable receiver,
         uint256 amount,
@@ -1298,6 +1485,13 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         snapshot.totalTxRewardWeight = ctx.totalTxRewardWeight;
     }
 
+    /**
+     * @dev Sealing the info about epoch
+     * @param offlineTimes Validators offline time
+     * @param offlineBlocks Validators offline blocks
+     * @param uptimes Validators uptimes
+     * @param originatedTxsFee Fees info
+     */
     function sealEpoch(
         uint256[] calldata offlineTime,
         uint256[] calldata offlineBlocks,
@@ -1316,6 +1510,10 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         snapshot.totalSupply = totalSupply;
     }
 
+    /**
+     * @dev Sealing the epoch info for validators
+     * @param nextValidatorIDs Validator IDs
+     */
     function sealEpochValidators(uint256[] calldata nextValidatorIDs)
         external
         onlyDriver
@@ -1339,6 +1537,12 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         return getEpochSnapshot[epoch].endTime;
     }
 
+    /**
+     * @dev Is the stake locked up
+     * @param delegator Delegator address
+     * @param toValidatorID Validator ID
+     * @return Is the stake locked up
+     */
     function isLockedUp(address delegator, uint256 toValidatorID)
         public
         view
@@ -1376,6 +1580,11 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
             );
     }
 
+    /**
+     * @dev Getting the unlocked stake amount
+     * @param delegator Delegator address
+     * @param toValidatorID 
+     */
     function getUnlockedStake(address delegator, uint256 toValidatorID)
         public
         view

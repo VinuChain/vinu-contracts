@@ -3,7 +3,10 @@ pragma solidity ^0.5.0;
 
 import "./Roles.sol";
 
-
+/**
+ * @title MinterRole
+ * @dev Helper contract for minter role 
+ */
 contract MinterRole {
     using Roles for Roles.Role;
 
