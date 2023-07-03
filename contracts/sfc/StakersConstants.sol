@@ -18,7 +18,7 @@ contract StakersConstants {
      */
     function minSelfStake() public pure returns (uint256) {
         // 500000 FTM
-        return 500000 * 1e18;
+        return 3175 * 1e14;
     }
 
     /**
