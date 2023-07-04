@@ -1,23 +1,44 @@
-# Special Fee Contract
+# Neonomad NFT marketplace
 
-The SFC (Special Fee Contract) maintains a group of validators and their delegations.
+## Build
 
-It distributes the rewards, based on internal transaction created by the Opera node.
-
-# Compile in docker
-
-1. `make`
-
-Build output can be found in `build/`
-
-# Run tests
-
-1. `make`
-2. `yarn ganache-cli --gasLimit 50000000 --gasPrice 0 --allowUnlimitedContractSize --defaultBalanceEther 5000000` (in 1st terminal)
-3. `yarn test`
-
-If everything is all right, it should output something along this:
+```bash
+$ make
 ```
+
+## Project Structure
+
+This is a truffle javascript project.
+Solidity version `0.5.17`. For the contracts to work correctly, the experimental pragma ABIEncoderV2 was used.
+
+### Tests
+
+Tests are found in the `./test/` folder.
+
+To run tests
+
+```bash
+$ make
+$ yarn ganache-cli --gasLimit 50000000 --gasPrice 0 --allowUnlimitedContractSize --defaultBalanceEther 5000000
+$ yarn test
+```
+
+To run coverage
+
+```bash
+$ make
+$ yarn ganache-cli --gasLimit 50000000 --gasPrice 0 --allowUnlimitedContractSize --defaultBalanceEther 5000000
+$ yarn truffle run coverage
+```
+
+### Contracts
+
+Solidity smart contracts are found in `./contracts/`.
+`./contracts/test` folder contains mock contracts that are used for testing purposes.
+
+## Test Coverage
+
+```text
   Contract: SFC
     Nde
       ✓ Should migrate to New address (67ms)
@@ -189,4 +210,73 @@ false
 
 
   125 passing (2m)
+
+-------------------------|----------|----------|----------|----------|----------------|
+File                     |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+-------------------------|----------|----------|----------|----------|----------------|
+ common/                 |      100 |    83.33 |      100 |      100 |                |
+  Decimal.sol            |      100 |      100 |      100 |      100 |                |
+  Initializable.sol      |      100 |    83.33 |      100 |      100 |                |
+ erc20/base/             |        0 |        0 |        0 |        0 |                |
+  ERC20.sol              |        0 |        0 |        0 |        0 |... 220,230,231 |
+  ERC20Burnable.sol      |        0 |      100 |        0 |        0 |       18,27,35 |
+  ERC20Detailed.sol      |        0 |      100 |        0 |        0 |... 24,31,39,55 |
+  ERC20Mintable.sol      |        0 |        0 |        0 |        0 |... 45,58,59,60 |
+  IERC20.sol             |      100 |      100 |      100 |      100 |                |
+  MinterRole.sol         |        0 |        0 |        0 |        0 |... 32,33,37,38 |
+  Roles.sol              |        0 |        0 |        0 |        0 |... 26,27,39,40 |
+ ownership/              |      100 |      100 |      100 |      100 |                |
+  Ownable.sol            |      100 |      100 |      100 |      100 |                |
+ sfc/                    |    80.56 |    60.11 |    78.74 |    80.21 |                |
+  NetworkInitializer.sol |        0 |      100 |        0 |        0 |    31,32,34,40 |
+  NodeDriver.sol         |    60.87 |       50 |    57.89 |    58.82 |... 306,313,322 |
+  SFC.sol                |    86.08 |    64.46 |       92 |    86.07 |... 5,1456,1481 |
+  StakeTokenizer.sol     |        0 |        0 |        0 |        0 |... 52,57,60,68 |
+  StakersConstants.sol   |      100 |      100 |      100 |      100 |                |
+ test/                   |      100 |      100 |       80 |      100 |                |
+  SFCI.sol               |      100 |      100 |      100 |      100 |                |
+  StubEvmWriter.sol      |      100 |      100 |       40 |      100 |                |
+  UnitTestSFC.sol        |      100 |      100 |      100 |      100 |                |
+ version/                |      100 |      100 |      100 |      100 |                |
+  Version.sol            |      100 |      100 |      100 |      100 |                |
+-------------------------|----------|----------|----------|----------|----------------|
+All files                |    73.06 |    55.86 |    66.49 |    72.82 |                |
+-------------------------|----------|----------|----------|----------|----------------|
 ```
+
+## Technical Requirements
+
+The technical requirement document describes the product's functionality and purpose.
+It can be found [here](https://drive.google.com/drive/folders/1s8bOV2v7yDzQoq3FML-vuvvMvAHBWePa/view).
+
+## Implementation Details
+
+### Audit scope
+
+The following files contain code that will be deployed in genesis block on mainnet and thus require a security audit:
+
+- `SFC.sol`
+- `NodeDriver.sol`
+- `NetworkInitializer.sol`
+
+### Architecture
+
+The system consists of several contracts that implement the underlying proof-of-stake blockchain system and system node contracts. 
+
+The core contract is `SFC`. It maintains a group of validators and their delegations. It distributes the rewards, based on internal transaction created by the node.
+
+The `NodeDriver` and `NodeDriverAuth` contracts are designed to manage the entire blockchain system (increase the native balance, nonce, manage contract storage slots etc.).
+
+The `NetworkInitializer` contract is intended for initializing `SFC`, `NodeDriver` and `NodeDriverAuth` contracts in one call to allow fewer genesis transactions.
+
+### Role Model
+
+The `SFC` and `NodeDriverAuth` contracrs has one owner role:
+
+- In `SFC` contract the owner can update such parameters as base validators reward per second, offline penalty threshold blocks and time, slashing refund ratio, native token total supply. Also owner can mint native token and update `StakeTokenizer` contract address.
+
+- In `NodeDriverAuth` contract the owner can migrate `NodeDriverAuth` contract to new address, upgrade the code of some contract, increase the nonce of some address, update the network rules, update the network version and increase the number of epochs in the blockchain.
+
+### Backend
+
+The contracts system is deployed in the genesis block and controlled by the fantom go-opera node with its modifications.

@@ -1,5 +1,5 @@
 pragma experimental ABIEncoderV2;
-pragma solidity ^0.5.0;
+pragma solidity 0.5.17;
 
 interface SFCI {
     function currentSealedEpoch() external view returns (uint256);

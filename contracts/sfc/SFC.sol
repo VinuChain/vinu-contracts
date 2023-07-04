@@ -1,5 +1,5 @@
 pragma experimental ABIEncoderV2;
-pragma solidity ^0.5.0;
+pragma solidity 0.5.17;
 
 import "../common/Initializable.sol";
 import "../ownership/Ownable.sol";
@@ -1240,7 +1240,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     }
 
     /**
-     * @dev Updating base reward per second value
+     * @dev Updating base validators reward per second value
      * @param value New base reward
      */
     function updateBaseRewardPerSecond(uint256 value) external onlyOwner {

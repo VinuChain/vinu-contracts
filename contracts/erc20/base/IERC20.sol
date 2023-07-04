@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma experimental ABIEncoderV2;
-pragma solidity ^0.5.0;
+pragma solidity 0.5.17;
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.

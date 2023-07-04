@@ -1,5 +1,5 @@
 pragma experimental ABIEncoderV2;
-pragma solidity ^0.5.0;
+pragma solidity 0.5.17;
 
 import "./SFC.sol";
 import "../erc20/base/ERC20Burnable.sol";
