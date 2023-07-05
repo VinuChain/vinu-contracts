@@ -107,9 +107,9 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
 
     struct Stake {
         address delegator;
+        uint64 timestamp;
         uint256 validatorId;
         uint256 amount;
-        uint256 timestamp;
     }
 
     Stake[] public stakes;
@@ -356,9 +356,9 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         uint256 length = stakes.length;
         Stake[] memory stakes_ = new Stake[](limit);
         for (uint256 i; i < limit; ) {
-            if (offset + i >= length) break;
+            if (offset.add(i) >= length) break;
             stakes_[i] = stakes[offset + i];
-            ++i;
+            i = i.add(1);
         }
         return stakes_;
     }
@@ -380,9 +380,9 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         WithdrawalRequest[] memory requests_ = new WithdrawalRequest[](limit);
         for (uint256 i; i < limit; ) {
             requests_[i] = getWithdrawalRequest[delegator][validatorID][
-                offset + i
+                offset.add(i)
             ];
-            ++i;
+            i = i.add(1);
         }
         return requests_;
     }
@@ -631,14 +631,14 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
             stakes.push(
                 Stake({
                     delegator: delegator,
+                    timestamp: uint64(block.timestamp),
                     validatorId: toValidatorID,
-                    amount: amount,
-                    timestamp: block.timestamp
+                    amount: amount
                 })
             );
         } else {
             stakes[stakePos].amount = stakes[stakePos].amount.add(amount);
-            stakes[stakePos].timestamp = block.timestamp;
+            stakes[stakePos].timestamp = uint64(block.timestamp);
         }
 
         getStake[delegator][toValidatorID] = getStake[delegator][toValidatorID]
@@ -721,9 +721,8 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         if (position != lastPos) {
             stakes[position] = stakes[lastPos];
 
-            Stake memory lastStake = stakes[lastPos];
-            stakePosition[lastStake.delegator][
-                lastStake.validatorId
+            stakePosition[stakes[lastPos].delegator][
+                stakes[lastPos].validatorId
             ] = position;
         }
         stakes.pop();

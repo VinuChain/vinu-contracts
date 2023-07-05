@@ -76,9 +76,9 @@ contract UnitTestNetworkInitializer {
 interface SFCUnitTestI {
     struct Stake {
         address delegator;
+        uint64 timestamp;
         uint256 validatorId;
         uint256 amount;
-        uint256 timestamp;
     }
 
     struct WithdrawalRequest {
