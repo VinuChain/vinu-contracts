@@ -1,4 +1,4 @@
-# Neonomad NFT marketplace
+# Vinu SFC
 
 ## Build
 
