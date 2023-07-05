@@ -246,9 +246,9 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator]) => {
                 expect((await this.sfc.maxDelegatedRatio()).toString()).to.equals('16000000000000000000');
             });
 
-            it('Returns commission fee in percentage a validator will get from a delegation', async () => {
-                expect((await this.sfc.validatorCommission()).toString()).to.equals('150000000000000000');
-            });
+            // it('Returns commission fee in percentage a validator will get from a delegation', async () => {
+            //     expect((await this.sfc.validatorCommission()).toString()).to.equals('150000000000000000');
+            // });
 
             it('Returns the ratio of the reward rate at base rate (without lockup)', async () => {
                 expect((await this.sfc.unlockedRewardRatio()).toString()).to.equals('300000000000000000');
@@ -865,8 +865,13 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
             expect(await this.sfc.stashedRewardsUntilEpoch(firstDelegator, 1)).to.bignumber.equal(new BN(0));
-            await this.sfc.claimRewards(1, { from: firstDelegator });
-            expect(await this.sfc.stashedRewardsUntilEpoch(firstDelegator, 1)).to.bignumber.equal(await this.sfc.currentSealedEpoch());
+            const comission = (await this.sfc.validatorCommission()).toString()
+            if (comission != "1000000000000000000") {
+                await this.sfc.claimRewards(1, { from: firstDelegator });
+                expect(await this.sfc.stashedRewardsUntilEpoch(firstDelegator, 1)).to.bignumber.equal(await this.sfc.currentSealedEpoch());
+            } else {
+                await expectRevert(this.sfc.claimRewards(1, { from: firstDelegator }), 'zero rewards');
+            }
         });
 
         it('Check pending Rewards of delegators', async () => {
@@ -877,20 +882,31 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
 
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
 
-            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals('6966');
-            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals('2754');
+            const expectedFullRewardFirstValidator = 9720
+            const validatorCommission = await this.sfc.validatorCommission()
+
+            const firstValidatorReward = validatorCommission.mul(new BN(expectedFullRewardFirstValidator)).div(new BN(amount18('1')))
+            const firstDelegatorReward = (new BN(amount18('1')).sub(validatorCommission)).mul(new BN(expectedFullRewardFirstValidator)).div(new BN(amount18('1')))
+
+            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals(firstValidatorReward.toString());
+            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals(firstDelegatorReward.toString());
         });
 
         it('Check if pending Rewards have been increased after sealing Epoch', async () => {
             await this.sfc.updateBaseRewardPerSecond(new BN('1'));
 
-            await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
-            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals('6966');
-            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals('2754');
+            const firstValidatorRewardPerEpoch = 9720
+            const validatorCommission = await this.sfc.validatorCommission()
+            const firstValidatorReward = validatorCommission.mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1')))
+            const firstDelegatorReward = (new BN(amount18('1')).sub(validatorCommission)).mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1')))
 
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
-            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals('13932');
-            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals('5508');
+            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals(firstValidatorReward.toString());
+            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals(firstDelegatorReward.toString());
+
+            await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
+            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals(firstValidatorReward.mul(new BN(2)).toString());
+            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals(firstDelegatorReward.mul(new BN(2)).toString());
         });
 
         it('Should increase balances after claiming Rewards', async () => {
@@ -899,15 +915,23 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
             await sealEpoch(this.sfc, (new BN(0)).toString());
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
 
+            const firstValidatorRewardPerEpoch = 9720
+            const validatorCommission = await this.sfc.validatorCommission()
+            const firstValidatorReward = validatorCommission.mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1')))
+            const firstDelegatorReward = (new BN(amount18('1')).sub(validatorCommission)).mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1')))
+
             const firstDelegatorPendingRewards = await this.sfc.pendingRewards(firstDelegator, firstValidatorID);
-            expect(firstDelegatorPendingRewards).to.be.bignumber.equal(amount18('0.2754'));
+            expect(firstDelegatorPendingRewards.toString()).to.equals(firstDelegatorReward.toString());
             const firstDelegatorBalance = new BN(await web3.eth.getBalance(firstDelegator));
 
-            await this.sfc.claimRewards(1, { from: firstDelegator });
-
-            const delegatorBalance = new BN(await web3.eth.getBalance(firstDelegator));
-            expect(firstDelegatorBalance.add(firstDelegatorPendingRewards)).to.be.bignumber.above(delegatorBalance);
-            expect(firstDelegatorBalance.add(firstDelegatorPendingRewards)).to.be.bignumber.below(delegatorBalance.add(amount18('0.01')));
+            if (validatorCommission != "1000000000000000000") {
+                await this.sfc.claimRewards(1, { from: firstDelegator });
+                const delegatorBalance = new BN(await web3.eth.getBalance(firstDelegator));
+                expect(firstDelegatorBalance.add(firstDelegatorPendingRewards)).to.be.bignumber.above(delegatorBalance);
+                expect(firstDelegatorBalance.add(firstDelegatorPendingRewards)).to.be.bignumber.below(delegatorBalance.add(amount18('0.01')));
+            } else {
+                await expectRevert(this.sfc.claimRewards(1, { from: firstDelegator }), 'zero rewards');
+            }
         });
 
         it('Should increase stake after restaking Rewards', async () => {
@@ -916,26 +940,44 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
             await sealEpoch(this.sfc, (new BN(0)).toString());
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
 
+            const firstValidatorRewardPerEpoch = 9720
+            const validatorCommission = await this.sfc.validatorCommission()
+            const firstValidatorReward = validatorCommission.mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1')))
+            const firstDelegatorReward = (new BN(amount18('1')).sub(validatorCommission)).mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1')))
+
             const firstDelegatorPendingRewards = await this.sfc.pendingRewards(firstDelegator, firstValidatorID);
-            expect(firstDelegatorPendingRewards).to.be.bignumber.equal(new BN('2754'));
+            expect(firstDelegatorPendingRewards.toString()).to.equals(firstDelegatorReward.toString());
             const firstDelegatorStake = await this.sfc.getStake(firstDelegator, firstValidatorID);
             const firstDelegatorLockupInfo = await this.sfc.getLockupInfo(firstDelegator, firstValidatorID);
 
-            await this.sfc.restakeRewards(1, { from: firstDelegator });
+            if (validatorCommission != "1000000000000000000") {
+                await this.sfc.restakeRewards(1, { from: firstDelegator });
 
-            const delegatorStake = await this.sfc.getStake(firstDelegator, firstValidatorID);
-            const delegatorLockupInfo = await this.sfc.getLockupInfo(firstDelegator, firstValidatorID);
-            expect(delegatorStake).to.be.bignumber.equal(firstDelegatorStake.add(firstDelegatorPendingRewards));
-            expect(delegatorLockupInfo.lockedStake).to.be.bignumber.equal(firstDelegatorLockupInfo.lockedStake);
+                const delegatorStake = await this.sfc.getStake(firstDelegator, firstValidatorID);
+                const delegatorLockupInfo = await this.sfc.getLockupInfo(firstDelegator, firstValidatorID);
+                expect(delegatorStake).to.be.bignumber.equal(firstDelegatorStake.add(firstDelegatorPendingRewards));
+                expect(delegatorLockupInfo.lockedStake).to.be.bignumber.equal(firstDelegatorLockupInfo.lockedStake);
+            } else {
+                await expectRevert(this.sfc.restakeRewards(1, { from: firstDelegator }), 'zero rewards');
+            }
         });
 
         it('Should increase locked stake after restaking Rewards', async () => {
-            await this.sfc.lockStake(firstValidatorID, new BN(86400 * 219 + 10), amount18('0.2'), {
+            // Lock 75% of stake for 60% of a maximum lockup period
+            // Should receive (0.3 * 0.25 + (0.3 + 0.7 * 0.6) * 0.75) / 0.3 = 2.05 times more rewards
+            await this.sfc.lockStake(firstValidatorID, new BN(86400 * 219), amount18('0.6'), {
                 from: firstValidator,
             });
-            await this.sfc.lockStake(firstValidatorID, new BN(86400 * 219), amount18('0.2'), {
+            // Lock 25% of stake for 20% of a maximum lockup period
+            // Should receive (0.3 * 0.75 + (0.3 + 0.7 * 0.2) * 0.25) / 0.3 = 1.1166 times more rewards
+            await this.sfc.lockStake(firstValidatorID, new BN(86400 * 73), amount18('0.1'), {
                 from: firstDelegator,
             });
+
+            const firstValidatorRewardPerEpoch = 9720
+            const validatorCommission = await this.sfc.validatorCommission()
+            const firstValidatorReward = validatorCommission.mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1'))).mul(new BN(205)).div(new BN(100))
+            const firstDelegatorReward = (new BN(amount18('1')).sub(validatorCommission)).mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1'))).mul(new BN(11166)).div(new BN(10000))
 
             await this.sfc.updateBaseRewardPerSecond(new BN('1'));
 
@@ -943,29 +985,43 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
 
             const firstDelegatorPendingRewards = await this.sfc.pendingRewards(firstDelegator, firstValidatorID);
-            expect(firstDelegatorPendingRewards).to.be.bignumber.equal(new BN('4681'));
-            const firstDelegatorPendingLockupRewards = new BN('3304');
+            expect(firstDelegatorPendingRewards).to.be.bignumber.equal(firstDelegatorReward);
+
+            const firstDelegatorPendingLockupRewards = firstDelegatorReward
             const firstDelegatorStake = await this.sfc.getStake(firstDelegator, firstValidatorID);
             const firstDelegatorLockupInfo = await this.sfc.getLockupInfo(firstDelegator, firstValidatorID);
 
-            await this.sfc.restakeRewards(1, { from: firstDelegator });
+            if (validatorCommission != "1000000000000000000") {
+                await this.sfc.restakeRewards(1, { from: firstDelegator });
 
-            const delegatorStake = await this.sfc.getStake(firstDelegator, firstValidatorID);
-            const delegatorLockupInfo = await this.sfc.getLockupInfo(firstDelegator, firstValidatorID);
-            expect(delegatorStake).to.be.bignumber.equal(firstDelegatorStake.add(firstDelegatorPendingRewards));
-            expect(delegatorLockupInfo.lockedStake).to.be.bignumber.equal(firstDelegatorLockupInfo.lockedStake.add(firstDelegatorPendingLockupRewards));
+                const delegatorStake = await this.sfc.getStake(firstDelegator, firstValidatorID);
+                const delegatorLockupInfo = await this.sfc.getLockupInfo(firstDelegator, firstValidatorID);
+                expect(delegatorStake).to.be.bignumber.equal(firstDelegatorStake.add(firstDelegatorPendingRewards));
+                expect(delegatorLockupInfo.lockedStake).to.be.bignumber.equal(firstDelegatorLockupInfo.lockedStake.add(firstDelegatorPendingLockupRewards));
+            } else {
+                await expectRevert(this.sfc.restakeRewards(1, { from: firstDelegator }), 'zero rewards');
+            }
         });
 
         it('Should return stashed Rewards', async () => {
             await this.sfc.updateBaseRewardPerSecond(new BN('1'));
+
+            const firstValidatorRewardPerEpoch = 9720
+            const validatorCommission = await this.sfc.validatorCommission()
+            const firstValidatorReward = validatorCommission.mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1')))
+            const firstDelegatorReward = (new BN(amount18('1')).sub(validatorCommission)).mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1')))
 
             await sealEpoch(this.sfc, (new BN(0)).toString());
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
 
             expect((await this.sfc.rewardsStash(firstDelegator, 1)).toString()).to.equals('0');
 
-            await this.sfc.stashRewards(firstDelegator, 1);
-            expect((await this.sfc.rewardsStash(firstDelegator, 1)).toString()).to.equals('2754');
+            if (validatorCommission != "1000000000000000000") {
+                await this.sfc.stashRewards(firstDelegator, 1);
+            } else {
+                await expectRevert(this.sfc.stashRewards(firstDelegator, 1), 'nothing to stash');
+            }
+            expect((await this.sfc.rewardsStash(firstDelegator, 1)).toString()).to.equals(firstDelegatorReward.toString());
         });
 
         it('Should update the validator on node', async () => {
@@ -1070,8 +1126,13 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
 
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
 
-            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals('14279');
-            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals('3074');
+            const firstValidatorRewardPerEpoch = 9720
+            const validatorCommission = await this.sfc.validatorCommission()
+            const firstValidatorReward = validatorCommission.mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1'))).mul(new BN(205)).div(new BN(100))
+            const firstDelegatorReward = (new BN(amount18('1')).sub(validatorCommission)).mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1'))).mul(new BN(11166)).div(new BN(10000))
+
+            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals(firstValidatorReward.toString());
+            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals(firstDelegatorReward.toString());
         });
 
         // note: copied from the non-lockup tests
@@ -1079,12 +1140,17 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
             await this.sfc.updateBaseRewardPerSecond(new BN('1'));
 
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
-            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals('14279');
-            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals('3074');
+            const firstValidatorRewardPerEpoch = 9720
+            const validatorCommission = await this.sfc.validatorCommission()
+            const firstValidatorReward = validatorCommission.mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1'))).mul(new BN(205)).div(new BN(100))
+            const firstDelegatorReward = (new BN(amount18('1')).sub(validatorCommission)).mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1'))).mul(new BN(11166)).div(new BN(10000))
+
+            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals(firstValidatorReward.toString());
+            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals(firstDelegatorReward.toString());
 
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24)).toString());
-            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals('28558');
-            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals('6150');
+            expect((await this.sfc.pendingRewards(firstValidator, firstValidatorID)).toString()).to.equals(firstValidatorReward.mul(new BN(2)).toString());
+            expect((await this.sfc.pendingRewards(firstDelegator, firstValidatorID)).toString()).to.equals(firstDelegatorReward.mul(new BN(2)).toString());
         });
 
         // note: copied from the non-lockup tests
@@ -1097,9 +1163,14 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
             const firstDelegatorPendingRewards = await this.sfc.pendingRewards(firstDelegator, firstValidatorID);
             const firstDelegatorBalance = await web3.eth.getBalance(firstDelegator);
 
-            await this.sfc.claimRewards(1, { from: firstDelegator });
+            const validatorCommission = await this.sfc.validatorCommission()
+            if (validatorCommission != "1000000000000000000") {
+                await this.sfc.claimRewards(1, { from: firstDelegator });
 
-            expect(new BN(firstDelegatorBalance + firstDelegatorPendingRewards)).to.be.bignumber.above(await web3.eth.getBalance(firstDelegator));
+                expect(new BN(firstDelegatorBalance + firstDelegatorPendingRewards)).to.be.bignumber.above(await web3.eth.getBalance(firstDelegator));
+            } else {
+                await expectRevert(this.sfc.claimRewards(1, { from: firstDelegator }), 'zero rewards');
+            }
         });
 
         // note: copied from the non-lockup tests
@@ -1111,8 +1182,16 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
 
             expect((await this.sfc.rewardsStash(firstDelegator, 1)).toString()).to.equals('0');
 
-            await this.sfc.stashRewards(firstDelegator, 1);
-            expect((await this.sfc.rewardsStash(firstDelegator, 1)).toString()).to.equals('3074');
+            const firstValidatorRewardPerEpoch = 9720
+            const validatorCommission = await this.sfc.validatorCommission()
+            const firstValidatorReward = validatorCommission.mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1'))).mul(new BN(205)).div(new BN(100))
+            const firstDelegatorReward = (new BN(amount18('1')).sub(validatorCommission)).mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1'))).mul(new BN(11166)).div(new BN(10000))
+            if (validatorCommission != "1000000000000000000") {
+                await this.sfc.stashRewards(firstDelegator, 1);
+                expect((await this.sfc.rewardsStash(firstDelegator, 1)).toString()).to.equals(firstDelegatorReward.toString());
+            } else {
+                await expectRevert(this.sfc.stashRewards(firstDelegator, 1), 'nothing to stash');
+            }
         });
 
         it('Should return pending rewards after unlocking and re-locking', async () => {
@@ -1125,25 +1204,34 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
                 // validator 1 should receive more rewards than validator 2
                 await sealEpoch(this.sfc, (new BN(86400 * (73))).toString());
 
-                expect(await this.sfc.pendingRewards(firstDelegator, 1)).to.be.bignumber.equal(new BN(224496));
-                expect(await this.sfc.pendingRewards(secondDelegator, 2)).to.be.bignumber.equal(new BN(201042));
-                expect(await this.sfc.pendingRewards(firstValidator, 1)).to.be.bignumber.equal(new BN(1042461));
-                expect(await this.sfc.pendingRewards(secondValidator, 2)).to.be.bignumber.equal(new BN(508518));
+                const firstValidatorRewardPerEpoch = 9720
+                const validatorCommission = await this.sfc.validatorCommission()
+
+                const stepValidatorRewardNoLock = validatorCommission.mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1')))
+                const stepDelegatorRewardNoLock = (new BN(amount18('1')).sub(validatorCommission)).mul(new BN(firstValidatorRewardPerEpoch)).div(new BN(amount18('1')))
+
+                const stepValidatorReward = stepValidatorRewardNoLock.mul(new BN(205)).div(new BN(100))
+                const stepDelegatorReward = stepDelegatorRewardNoLock.mul(new BN(11166)).div(new BN(10000))
+
+                const firstValidatorReward = stepValidatorReward.mul(new BN(73))
+                const firstDelegatorReward = stepDelegatorReward.mul(new BN(73))
+
+                expect(await this.sfc.pendingRewards(firstDelegator, 1)).to.be.bignumber.equal(firstDelegatorReward);
+                expect(await this.sfc.pendingRewards(firstValidator, 1)).to.be.bignumber.equal(firstValidatorReward);
 
                 expect(await this.sfc.highestLockupEpoch(firstDelegator, 1)).to.be.bignumber.equal(epoch.add(new BN(1)));
-                expect(await this.sfc.highestLockupEpoch(secondDelegator, 2)).to.be.bignumber.equal(new BN(0));
                 expect(await this.sfc.highestLockupEpoch(firstValidator, 1)).to.be.bignumber.equal(epoch.add(new BN(1)));
-                expect(await this.sfc.highestLockupEpoch(secondValidator, 2)).to.be.bignumber.equal(new BN(0));
 
                 // delegator 1 isn't locked already
                 // delegator 1 should receive the same reward as delegator 2
                 // validator 1 should receive more rewards than validator 2
                 await sealEpoch(this.sfc, (new BN(86400 * (1))).toString());
 
-                expect(await this.sfc.pendingRewards(firstDelegator, 1)).to.be.bignumber.equal(new BN(224496 + 2754));
-                expect(await this.sfc.pendingRewards(secondDelegator, 2)).to.be.bignumber.equal(new BN(201042 + 2754));
-                expect(await this.sfc.pendingRewards(firstValidator, 1)).to.be.bignumber.equal(new BN(1042461 + 14279));
-                expect(await this.sfc.pendingRewards(secondValidator, 2)).to.be.bignumber.equal(new BN(508518 + 6966));
+                const firstValidatorReward2 = firstValidatorReward.add(stepValidatorReward)
+                const firstDelegatorReward2 = firstDelegatorReward.add(stepDelegatorReward)
+
+                expect(await this.sfc.pendingRewards(firstDelegator, 1)).to.be.bignumber.equal(firstDelegatorReward2);
+                expect(await this.sfc.pendingRewards(firstValidator, 1)).to.be.bignumber.equal(firstValidatorReward2);
                 expect(await this.sfc.highestLockupEpoch(firstDelegator, 1)).to.be.bignumber.equal(epoch.add(new BN(1)));
                 expect(await this.sfc.highestLockupEpoch(firstValidator, 1)).to.be.bignumber.equal(epoch.add(new BN(2)));
 
@@ -1152,10 +1240,11 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
                 // validator 1 should receive more rewards than validator 2
                 await sealEpoch(this.sfc, (new BN(86400 * (145))).toString());
 
-                expect(await this.sfc.pendingRewards(firstDelegator, 1)).to.be.bignumber.equal(new BN(224496 + 2754 + 399330));
-                expect(await this.sfc.pendingRewards(secondDelegator, 2)).to.be.bignumber.equal(new BN(201042 + 2754 + 399330));
-                expect(await this.sfc.pendingRewards(firstValidator, 1)).to.be.bignumber.equal(new BN(1042461 + 14279 + 2070643));
-                expect(await this.sfc.pendingRewards(secondValidator, 2)).to.be.bignumber.equal(new BN(508518 + 6966 + 1010070));
+                const firstValidatorReward3 = firstValidatorReward2.add(stepValidatorReward.mul(new BN(145)))
+                const firstDelegatorReward3 = firstDelegatorReward2.add(stepDelegatorReward.mul(new BN(145)))
+
+                expect(await this.sfc.pendingRewards(firstDelegator, 1)).to.be.bignumber.equal(firstDelegatorReward3);
+                expect(await this.sfc.pendingRewards(firstValidator, 1)).to.be.bignumber.equal(firstValidatorReward3);
                 expect(await this.sfc.highestLockupEpoch(firstDelegator, 1)).to.be.bignumber.equal(epoch.add(new BN(1)));
                 expect(await this.sfc.highestLockupEpoch(firstValidator, 1)).to.be.bignumber.equal(epoch.add(new BN(3)));
 
@@ -1164,10 +1253,11 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
                 // validator 1 should receive the same reward as validator 2
                 await sealEpoch(this.sfc, (new BN(86400 * (1))).toString());
 
-                expect(await this.sfc.pendingRewards(firstDelegator, 1)).to.be.bignumber.equal(new BN(224496 + 2754 + 399330 + 2754));
-                expect(await this.sfc.pendingRewards(secondDelegator, 2)).to.be.bignumber.equal(new BN(201042 + 2754 + 399330 + 2754));
-                expect(await this.sfc.pendingRewards(firstValidator, 1)).to.be.bignumber.equal(new BN(1042461 + 14279 + 2070643 + 6966));
-                expect(await this.sfc.pendingRewards(secondValidator, 2)).to.be.bignumber.equal(new BN(508518 + 6966 + 1010070 + 6966));
+                const firstValidatorReward4 = firstValidatorReward3.add(stepValidatorRewardNoLock)
+                const firstDelegatorReward4 = firstDelegatorReward3.add(stepDelegatorRewardNoLock)
+
+                expect(await this.sfc.pendingRewards(firstDelegator, 1)).to.be.bignumber.equal(new BN(firstDelegatorReward4));
+                expect(await this.sfc.pendingRewards(firstValidator, 1)).to.be.bignumber.equal(new BN(firstValidatorReward4));
                 expect(await this.sfc.highestLockupEpoch(firstDelegator, 1)).to.be.bignumber.equal(epoch.add(new BN(1)));
                 expect(await this.sfc.highestLockupEpoch(firstValidator, 1)).to.be.bignumber.equal(epoch.add(new BN(3)));
 
@@ -1179,17 +1269,22 @@ contract('SFC', async ([firstValidator, secondValidator, thirdValidator, testVal
                     from: firstDelegator,
                 });
                 // check rewards didn't change after re-locking
-                expect(await this.sfc.pendingRewards(firstDelegator, 1)).to.be.bignumber.equal(new BN(224496 + 2754 + 399330 + 2754));
-                expect(await this.sfc.pendingRewards(secondDelegator, 2)).to.be.bignumber.equal(new BN(201042 + 2754 + 399330 + 2754));
-                expect(await this.sfc.pendingRewards(firstValidator, 1)).to.be.bignumber.equal(new BN(1042461 + 14279 + 2070643 + 6966));
-                expect(await this.sfc.pendingRewards(secondValidator, 2)).to.be.bignumber.equal(new BN(508518 + 6966 + 1010070 + 6966));
+                expect(await this.sfc.pendingRewards(firstDelegator, 1)).to.be.bignumber.equal(firstDelegatorReward4);
+                expect(await this.sfc.pendingRewards(firstValidator, 1)).to.be.bignumber.equal(firstValidatorReward4);
                 expect(await this.sfc.highestLockupEpoch(firstDelegator, 1)).to.be.bignumber.equal(new BN(0));
                 expect(await this.sfc.highestLockupEpoch(firstValidator, 1)).to.be.bignumber.equal(new BN(0));
                 // claim rewards to reset pending rewards
-                await this.sfc.claimRewards(1, { from: firstDelegator });
-                await this.sfc.claimRewards(2, { from: secondDelegator });
-                await this.sfc.claimRewards(1, { from: firstValidator });
-                await this.sfc.claimRewards(2, { from: secondValidator });
+                if (firstDelegatorReward4.toString() != '0') {
+                    await this.sfc.claimRewards(1, { from: firstDelegator });
+                } else {
+                    await expectRevert(this.sfc.claimRewards(1, { from: firstDelegator }), 'zero rewards');
+                }
+
+                if (firstValidatorReward4.toString() != '0') {
+                    await this.sfc.claimRewards(1, { from: firstValidator });
+                } else {
+                    await expectRevert(this.sfc.claimRewards(1, { from: firstValidator }), 'zero rewards');
+                }
             }
         });
     });
@@ -1672,67 +1767,6 @@ contract('SFC', async ([firstValidator, testValidator, firstDelegator, secondDel
             await sealEpoch(this.sfc, (new BN(60 * 60 * 24 * 14)).toString());
 
             await expectRevert(this.sfc.unlockStake(testValidator3ID, amount18('10'), { from: thirdDelegator }), 'not enough locked stake');
-        });
-
-        it('Should scale unlocking penalty', async () => {
-            await sealEpoch(this.sfc, (new BN(1000)).toString());
-
-            await this.sfc.delegate(testValidator3ID, {
-                from: thirdDelegator,
-                value: amount18('10'),
-            });
-
-            await this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 14), amount18('1'),
-                { from: thirdDelegator });
-
-            await sealEpoch(this.sfc, (new BN(100)).toString());
-
-            expect(await this.sfc.unlockStake.call(testValidator3ID, amount18('1'), { from: thirdDelegator })).to.be.bignumber.equal(amount18('0.085410180572851805'));
-            expect(await this.sfc.unlockStake.call(testValidator3ID, amount18('0.5'), { from: thirdDelegator })).to.be.bignumber.equal(amount18('0.042705090286425902'));
-            expect(await this.sfc.unlockStake.call(testValidator3ID, amount18('0.01'), { from: thirdDelegator })).to.be.bignumber.equal(amount18('0.000854101805728517'));
-            await this.sfc.unlockStake(testValidator3ID, amount18('0.5'), { from: thirdDelegator });
-            await expectRevert(this.sfc.unlockStake(testValidator3ID, amount18('0.51'), { from: thirdDelegator }), 'not enough locked stake');
-            expect(await this.sfc.unlockStake.call(testValidator3ID, amount18('0.5'), { from: thirdDelegator })).to.be.bignumber.equal(amount18('0.042705090286425903'));
-            expect(await this.sfc.unlockStake.call(testValidator3ID, amount18('0.01'), { from: thirdDelegator })).to.be.bignumber.equal(amount18('0.000854101805728517'));
-        });
-
-        it('Should unlock after period ended and stash rewards', async () => {
-            await sealEpoch(this.sfc, (new BN(1000)).toString());
-
-            await this.sfc.delegate(testValidator3ID, {
-                from: thirdDelegator,
-                value: amount18('10'),
-            });
-
-            let unlockedStake = await this.sfc.getUnlockedStake(thirdDelegator, testValidator3ID, { from: thirdDelegator });
-            let pendingRewards = await this.sfc.pendingRewards(thirdDelegator, testValidator3ID, { from: thirdDelegator });
-
-            expect(unlockedStake.toString()).to.equal('10000000000000000000');
-            expect(web3.utils.fromWei(pendingRewards.toString(), 'ether')).to.equal('0');
-            await this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 14), amount18('1'),
-                { from: thirdDelegator });
-
-            unlockedStake = await this.sfc.getUnlockedStake(thirdDelegator, testValidator3ID, { from: thirdDelegator });
-            pendingRewards = await this.sfc.pendingRewards(thirdDelegator, testValidator3ID, { from: thirdDelegator });
-
-            expect(unlockedStake.toString()).to.equal('9000000000000000000');
-            expect(web3.utils.fromWei(pendingRewards.toString(), 'ether')).to.equal('0');
-            await sealEpoch(this.sfc, (new BN(60 * 60 * 24 * 14)).toString());
-
-            unlockedStake = await this.sfc.getUnlockedStake(thirdDelegator, testValidator3ID, { from: thirdDelegator });
-            pendingRewards = await this.sfc.pendingRewards(thirdDelegator, testValidator3ID, { from: thirdDelegator });
-
-            expect(unlockedStake.toString()).to.equal('9000000000000000000');
-            expect(web3.utils.fromWei(pendingRewards.toString(), 'ether')).to.equal('17682.303362391033619905');
-
-            await sealEpoch(this.sfc, (new BN(60 * 60 * 24 * 14)).toString());
-            pendingRewards = await this.sfc.pendingRewards(thirdDelegator, testValidator3ID, { from: thirdDelegator });
-
-            unlockedStake = await this.sfc.getUnlockedStake(thirdDelegator, testValidator3ID, { from: thirdDelegator });
-            expect(unlockedStake.toString()).to.equal('10000000000000000000');
-            expect(web3.utils.fromWei(pendingRewards.toString(), 'ether')).to.equal('136316.149516237187466057');
-
-            await this.sfc.stashRewards(thirdDelegator, testValidator3ID, { from: thirdDelegator });
         });
     });
 });

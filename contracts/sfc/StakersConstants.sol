@@ -33,8 +33,8 @@ contract StakersConstants {
      * @dev The commission fee in percentage a validator will get from a delegation, e.g., 15%
      */
     function validatorCommission() public pure returns (uint256) {
-        // 15%
-        return (15 * Decimal.unit()) / 100;
+        // 100%
+        return Decimal.unit();
     }
 
     /**
