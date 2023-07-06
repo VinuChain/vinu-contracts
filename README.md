@@ -1,5 +1,9 @@
 # Vinu SFC
 
+## Supported operating system
+
+The project is supported on all UNIX (and UNIX-like) OS's and not supported on Windows.
+
 ## Build
 
 ```bash
@@ -247,7 +251,7 @@ All files                |    73.06 |    55.86 |    66.49 |    72.82 |          
 ## Technical Requirements
 
 The technical requirement document describes the product's functionality and purpose.
-It can be found [here](https://drive.google.com/drive/folders/1s8bOV2v7yDzQoq3FML-vuvvMvAHBWePa/view).
+It can be found [here](https://drive.google.com/drive/folders/1s8bOV2v7yDzQoq3FML-vuvvMvAHBWePa).
 
 ## Implementation Details
 
@@ -258,6 +262,11 @@ The following files contain code that will be deployed in genesis block on mainn
 - `SFC.sol`
 - `NodeDriver.sol`
 - `NetworkInitializer.sol`
+- `StakersConstants.sol`
+- `Initializable.sol`
+- `Ownable.sol`
+- `Version.sol`
+- `Decimal.sol`
 
 ### Architecture
 

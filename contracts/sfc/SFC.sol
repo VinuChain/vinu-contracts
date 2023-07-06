@@ -105,14 +105,20 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
 
     address public stakeTokenizerAddress;
 
+    struct StakeWithoutAmount {
+        address delegator;
+        uint96 timestamp;
+        uint256 validatorId;
+    }
+
     struct Stake {
         address delegator;
-        uint64 timestamp;
+        uint96 timestamp;
         uint256 validatorId;
         uint256 amount;
     }
 
-    Stake[] public stakes;
+    StakeWithoutAmount[] public stakes;
     mapping(address => mapping(uint256 => uint256)) internal stakePosition;
 
     mapping(address => mapping(uint256 => uint256)) internal wrIdCount;
@@ -357,7 +363,14 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         Stake[] memory stakes_ = new Stake[](limit);
         for (uint256 i; i < limit; ) {
             if (offset.add(i) >= length) break;
-            stakes_[i] = stakes[offset + i];
+            address delegator = stakes[offset + i].delegator;
+            uint256 validatorId = stakes[offset + i].validatorId;
+            stakes_[i] = Stake({
+                delegator: delegator,
+                timestamp: stakes[offset + i].timestamp,
+                validatorId: validatorId,
+                amount: getStake[delegator][validatorId]
+            });
             i = i.add(1);
         }
         return stakes_;
@@ -414,10 +427,9 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         getEpochSnapshot[sealedEpoch].endTime = _now();
 
         stakes.push(
-            Stake({
+            StakeWithoutAmount({
                 delegator: address(0),
                 validatorId: 0,
-                amount: 0,
                 timestamp: 0
             })
         );
@@ -629,16 +641,14 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         if (stakePos == 0) {
             stakePosition[delegator][toValidatorID] = stakes.length;
             stakes.push(
-                Stake({
+                StakeWithoutAmount({
                     delegator: delegator,
-                    timestamp: uint64(block.timestamp),
-                    validatorId: toValidatorID,
-                    amount: amount
+                    timestamp: uint96(block.timestamp),
+                    validatorId: toValidatorID
                 })
             );
         } else {
-            stakes[stakePos].amount = stakes[stakePos].amount.add(amount);
-            stakes[stakePos].timestamp = uint64(block.timestamp);
+            stakes[stakePos].timestamp = uint96(block.timestamp);
         }
 
         getStake[delegator][toValidatorID] = getStake[delegator][toValidatorID]
@@ -686,17 +696,17 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         uint256 toValidatorID,
         uint256 amount
     ) internal {
-        uint256 stakePos = stakePosition[delegator][toValidatorID];
-        stakes[stakePos].amount = stakes[stakePos].amount.sub(amount);
-        if (stakes[stakePos].amount == 0) {
-            _removeStake(stakePos);
-        }
-
         getStake[delegator][toValidatorID] -= amount;
         getValidator[toValidatorID].receivedStake = getValidator[toValidatorID]
             .receivedStake
             .sub(amount);
         totalStake = totalStake.sub(amount);
+
+        if (getStake[delegator][toValidatorID] == 0) {
+            uint256 stakePos = stakePosition[delegator][toValidatorID];
+            _removeStake(stakePos);
+        }
+
         if (getValidator[toValidatorID].status == OK_STATUS) {
             totalActiveStake = totalActiveStake.sub(amount);
         }
