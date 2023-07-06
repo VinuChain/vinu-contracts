@@ -15,6 +15,7 @@ docker -v
 If it's installed build the project.
 
 ```bash
+$ yarn
 $ make
 ```
 
