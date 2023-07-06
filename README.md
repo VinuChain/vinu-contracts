@@ -6,6 +6,14 @@ The project is supported on all UNIX (and UNIX-like) OS's and not supported on W
 
 ## Build
 
+Make sure you have docker (>= v20) installed.
+
+```bash
+docker -v
+```
+
+If it's installed build the project.
+
 ```bash
 $ make
 ```
