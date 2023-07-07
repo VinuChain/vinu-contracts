@@ -1,0 +1,385 @@
+yarn run v1.22.19
+$ truffle run coverage
+
+> Using Truffle library from local node_modules.
+
+⚠️  There was a problem attaching to the ganache VM.
+⚠️  For help, see the "client" & "providerOptions" syntax in solidity-coverage docs.
+⚠️  Using ganache-cli (v2.13.2) instead.
+
+> server:            http://127.0.0.1:8555
+> truffle:           v5.10.2
+> ganache-core:      v2.13.2
+> solidity-coverage: v0.7.16
+
+Network Info
+============
+> id:      *
+> port:    8555
+> network: soliditycoverage
+
+
+Instrumenting for coverage...
+=============================
+
+> common/Decimal.sol
+> common/Initializable.sol
+> erc20/base/ERC20.sol
+> erc20/base/ERC20Burnable.sol
+> erc20/base/ERC20Detailed.sol
+> erc20/base/ERC20Mintable.sol
+> erc20/base/IERC20.sol
+> erc20/base/MinterRole.sol
+> erc20/base/Roles.sol
+> ownership/Ownable.sol
+> sfc/NetworkInitializer.sol
+> sfc/NodeDriver.sol
+> sfc/SFC.sol
+> sfc/StakersConstants.sol
+> sfc/StakeTokenizer.sol
+> test/SFCI.sol
+> test/StubEvmWriter.sol
+> test/UnitTestSFC.sol
+> version/Version.sol
+
+Coverage skipped for:
+=====================
+
+> common/ReentrancyGuard.sol
+> sfc/Migrations.sol
+
+Compiling your contracts...
+===========================
+> Compiling ./.coverage_contracts/common/Decimal.sol
+> Compiling ./.coverage_contracts/common/Initializable.sol
+> Compiling ./.coverage_contracts/common/ReentrancyGuard.sol
+> Compiling ./.coverage_contracts/erc20/base/ERC20.sol
+> Compiling ./.coverage_contracts/erc20/base/ERC20Burnable.sol
+> Compiling ./.coverage_contracts/erc20/base/ERC20Detailed.sol
+> Compiling ./.coverage_contracts/erc20/base/ERC20Mintable.sol
+> Compiling ./.coverage_contracts/erc20/base/IERC20.sol
+> Compiling ./.coverage_contracts/erc20/base/MinterRole.sol
+> Compiling ./.coverage_contracts/erc20/base/Roles.sol
+> Compiling ./.coverage_contracts/ownership/Ownable.sol
+> Compiling ./.coverage_contracts/sfc/Migrations.sol
+> Compiling ./.coverage_contracts/sfc/NetworkInitializer.sol
+> Compiling ./.coverage_contracts/sfc/NodeDriver.sol
+> Compiling ./.coverage_contracts/sfc/SFC.sol
+> Compiling ./.coverage_contracts/sfc/StakeTokenizer.sol
+> Compiling ./.coverage_contracts/sfc/StakersConstants.sol
+> Compiling ./.coverage_contracts/test/SFCI.sol
+> Compiling ./.coverage_contracts/test/StubEvmWriter.sol
+> Compiling ./.coverage_contracts/test/UnitTestSFC.sol
+> Compiling ./.coverage_contracts/version/Version.sol
+> Compiling @openzeppelin/contracts/math/SafeMath.sol
+> Compilation warnings encountered:
+
+    project:/.coverage_contracts/common/Decimal.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/common/Initializable.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/common/ReentrancyGuard.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/erc20/base/IERC20.sol:3:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/erc20/base/ERC20.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/erc20/base/ERC20Burnable.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/erc20/base/ERC20Detailed.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/erc20/base/Roles.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/erc20/base/MinterRole.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/erc20/base/ERC20Mintable.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/ownership/Ownable.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/sfc/Migrations.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/sfc/StakersConstants.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/sfc/StakeTokenizer.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/sfc/NodeDriver.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/sfc/SFC.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/sfc/NetworkInitializer.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/test/SFCI.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/test/UnitTestSFC.sol:1:1: Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:9:25: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+    function setBalance(address acc, uint256 value) external {c_0x1622 ...
+                        ^---------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:9:38: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+ ...   function setBalance(address acc, uint256 value) external {c_0x162250b9(0x524ef6c6 ...
+                                        ^-----------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:12:23: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+    function copyCode(address acc, address from) external {c_0x16225 ...
+                      ^---------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:12:36: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+    function copyCode(address acc, address from) external {c_0x162250b9(0x7b928fa1 ...
+                                   ^----------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:15:23: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+    function swapCode(address acc, address with) external {c_0x16225 ...
+                      ^---------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:15:36: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+    function swapCode(address acc, address with) external {c_0x162250b9(0x186277ad ...
+                                   ^----------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:18:25: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+    function setStorage(address acc, bytes32 key, bytes32 value) exter ...
+                        ^---------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:18:38: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+ ...   function setStorage(address acc, bytes32 key, bytes32 value) external {c_0x1622 ...
+                                        ^---------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:18:51: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+ ... tStorage(address acc, bytes32 key, bytes32 value) external {c_0x162250b9(0x28e01d92 ...
+                                        ^-----------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:21:23: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+    function incNonce(address acc, uint256 diff) external {c_0x16225 ...
+                      ^---------^
+,project:/.coverage_contracts/test/StubEvmWriter.sol:21:36: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+    function incNonce(address acc, uint256 diff) external {c_0x162250b9(0xc8e54856 ...
+                                   ^----------^
+
+> Artifacts written to /home/lebedev666e/Gotbit/vinu-contracts/.coverage_artifacts/contracts
+> Compiled successfully using:
+   - solc: 0.5.17+commit.d19bba13.Emscripten.clang
+
+Compiling your contracts...
+===========================
+> Everything is up to date, there is nothing to compile.
+
+[0m[0m
+[0m  Contract: SFC[0m
+[0m    Nde[0m
+    [32m  ✔[0m[90m Should migrate to New address[0m[33m (62ms)[0m
+    [32m  ✔[0m[90m Should not migrate if not owner[0m[31m (160ms)[0m
+    [32m  ✔[0m[90m Should not copyCode if not owner[0m[33m (63ms)[0m
+    [32m  ✔[0m[90m Should copyCode[0m[33m (61ms)[0m
+    [32m  ✔[0m[90m Should update network version[0m[33m (48ms)[0m
+    [32m  ✔[0m[90m Should not update network version if not owner[0m[31m (83ms)[0m
+    [32m  ✔[0m[90m Should advance epoch[0m[33m (75ms)[0m
+    [32m  ✔[0m[90m Should not set a new storage if not backend address[0m[31m (100ms)[0m
+    [32m  ✔[0m[90m Should not advance epoch if not owner[0m[31m (89ms)[0m
+    [32m  ✔[0m[90m Should not set backend if not backend address[0m[31m (149ms)[0m
+    [32m  ✔[0m[90m Should not swap code if not backend address[0m[31m (167ms)[0m
+    [32m  ✔[0m[90m Should not be possible add a Genesis Validator through NodeDriver if not called by Node[0m[31m (179ms)[0m
+    [32m  ✔[0m[90m Should not be possible to deactivate a validator through NodeDriver if not called by Node[0m[31m (88ms)[0m
+    [32m  ✔[0m[90m Should not be possible to add a Genesis Delegation through NodeDriver if not called by node[0m[31m (82ms)[0m
+    [32m  ✔[0m[90m Should not be possible to seal Epoch Validators through NodeDriver if not called by node[0m[31m (99ms)[0m
+    [32m  ✔[0m[90m Should not be possible to seal Epoch through NodeDriver if not called by node[0m[31m (78ms)[0m
+[0m    Genesis Validator[0m
+    [32m  ✔[0m[90m Set Genesis Validator with bad Status[0m[33m (72ms)[0m
+    [32m  ✔[0m[90m should reject sealEpoch if not called by Node[0m[33m (51ms)[0m
+    [32m  ✔[0m[90m should reject SealEpochValidators if not called by Node[0m[33m (67ms)[0m
+
+[0m  Contract: SFC[0m
+[0m    Basic functions[0m
+[0m      Constants[0m
+      [32m  ✔[0m[90m Returns current Epoch[0m
+      [32m  ✔[0m[90m Returns minimum amount to stake for a Validator[0m
+      [32m  ✔[0m[90m Returns the maximum ratio of delegations a validator can have[0m
+      [32m  ✔[0m[90m Returns the ratio of the reward rate at base rate (without lockup)[0m
+      [32m  ✔[0m[90m Returns the minimum duration of a stake/delegation lockup[0m
+      [32m  ✔[0m[90m Returns the maximum duration of a stake/delegation lockup[0m
+      [32m  ✔[0m[90m Returns the period of time that stake is locked[0m[31m (86ms)[0m
+      [32m  ✔[0m[90m Returns the number of epochs that stake is locked[0m
+      [32m  ✔[0m[90m Returns the version of the current implementation[0m[33m (41ms)[0m
+      [32m  ✔[0m[90m Should create a Validator and return the ID[0m[31m (615ms)[0m
+      [32m  ✔[0m[90m Should fail to create a Validator insufficient self-stake[0m[33m (64ms)[0m
+      [32m  ✔[0m[90m Should fail if pubkey is empty[0m[33m (65ms)[0m
+      [32m  ✔[0m[90m Should create two Validators and return the correct last validator ID[0m[31m (569ms)[0m
+      [32m  ✔[0m[90m Should return Delegation[0m[31m (581ms)[0m
+      [32m  ✔[0m[90m Should reject if amount is insufficient for self-stake[0m[31m (95ms)[0m
+      [32m  ✔[0m[90m Returns current Epoch[0m
+      [32m  ✔[0m[90m Should return current Sealed Epoch[0m
+      [32m  ✔[0m[90m Should return Now()[0m[33m (55ms)[0m
+      [32m  ✔[0m[90m Should return getTime()[0m
+[0m      Initialize[0m
+      [32m  ✔[0m[90m Should have been initialized with firstValidator[0m[33m (39ms)[0m
+[0m      Ownable[0m
+      [32m  ✔[0m[90m Should return the owner of the contract[0m
+      [32m  ✔[0m[90m Should return true if the caller is the owner of the contract[0m
+      [32m  ✔[0m[90m Should return address(0) if owner leaves the contract without owner[0m[33m (73ms)[0m
+      [32m  ✔[0m[90m Should transfer ownership to the new owner[0m[31m (108ms)[0m
+      [32m  ✔[0m[90m Should not be able to transfer ownership if not owner[0m[33m (52ms)[0m
+      [32m  ✔[0m[90m Should not be able to transfer ownership to address(0)[0m[31m (76ms)[0m
+[0m      Events emitters[0m
+      [32m  ✔[0m[90m Should call updateNetworkRules[0m[31m (172ms)[0m
+      [32m  ✔[0m[90m Should call updateOfflinePenaltyThreshold[0m
+
+[0m  Contract: SFC[0m
+[0m    Prevent Genesis Call if not node[0m
+    [32m  ✔[0m[90m Should not be possible add a Genesis Validator if called not by node[0m[33m (60ms)[0m
+    [32m  ✔[0m[90m Should not be possible add a Genesis Delegation if called not by node[0m[33m (67ms)[0m
+[0m    Create validators[0m
+    [32m  ✔[0m[90m Should create Validators[0m[31m (894ms)[0m
+    [32m  ✔[0m[90m Should return the right ValidatorID by calling getValidatorID[0m[31m (1010ms)[0m
+    [32m  ✔[0m[90m Should not be able to stake if Validator not created yet[0m[31m (1211ms)[0m
+    [32m  ✔[0m[90m Should stake with different delegators[0m[31m (2039ms)[0m
+    [32m  ✔[0m[90m Should return the amount of delegated for each Delegator[0m[31m (3169ms)[0m
+    [32m  ✔[0m[90m Should return the total of received Stake[0m[31m (977ms)[0m
+    [32m  ✔[0m[90m Should return the total of received Stake[0m[31m (1050ms)[0m
+
+[0m  Contract: SFC[0m
+[0m    Returns Validator[0m
+    [32m  ✔[0m[90m Should returns Validator' status [0m
+    [32m  ✔[0m[90m Should returns Validator' Deactivated Time[0m
+    [32m  ✔[0m[90m Should returns Validator' Deactivated Epoch[0m
+    [32m  ✔[0m[90m Should returns Validator's Received Stake[0m
+    [32m  ✔[0m[90m Should returns Validator's Created Epoch[0m
+    [32m  ✔[0m[90m Should returns Validator's Created Time[0m
+    [32m  ✔[0m[90m Should returns Validator's Auth (address)[0m
+[0m    EpochSnapshot[0m
+    [32m  ✔[0m[90m Returns stashedRewardsUntilEpoch[0m[31m (1037ms)[0m
+[0m    Methods tests[0m
+    [32m  ✔[0m[90m checking createValidator function[0m[31m (1066ms)[0m
+    [32m  ✔[0m[90m checking sealing epoch[0m[31m (1693ms)[0m
+
+[0m  Contract: SFC[0m
+[0m    Staking / Sealed Epoch functions[0m
+    [32m  ✔[0m[90m Should return claimed Rewards until Epoch[0m[31m (1910ms)[0m
+    [32m  ✔[0m[90m Check pending Rewards of delegators[0m[31m (1810ms)[0m
+    [32m  ✔[0m[90m Check if pending Rewards have been increased after sealing Epoch[0m[31m (1874ms)[0m
+    [32m  ✔[0m[90m Should increase balances after claiming Rewards[0m[31m (2251ms)[0m
+    [32m  ✔[0m[90m Should increase stake after restaking Rewards[0m[31m (2314ms)[0m
+    [32m  ✔[0m[90m Should increase locked stake after restaking Rewards[0m[31m (3386ms)[0m
+    [32m  ✔[0m[90m Should return stashed Rewards[0m[31m (1544ms)[0m
+    [32m  ✔[0m[90m Should update the validator on node[0m[31m (101ms)[0m
+    [32m  ✔[0m[90m Should not be able to deactivate validator if not Node[0m[31m (91ms)[0m
+    [32m  ✔[0m[90m Should seal Epochs[0m[31m (545ms)[0m
+    [32m  ✔[0m[90m Should seal Epoch on Validators[0m[31m (589ms)[0m
+[0m    Stake lockup[0m
+    [32m  ✔[0m[90m Check pending Rewards of delegators[0m[31m (808ms)[0m
+    [32m  ✔[0m[90m Check if pending Rewards have been increased after sealing Epoch[0m[31m (1669ms)[0m
+    [32m  ✔[0m[90m Should increase balances after claiming Rewards[0m[31m (1268ms)[0m
+    [32m  ✔[0m[90m Should return stashed Rewards[0m[31m (1586ms)[0m
+    [32m  ✔[0m[90m Should return pending rewards after unlocking and re-locking[0m[31m (8618ms)[0m
+[0m    NodeDriver[0m
+    [32m  ✔[0m[90m Should not be able to call `setGenesisValidator` if not NodeDriver[0m[31m (93ms)[0m
+    [32m  ✔[0m[90m Should not be able to call `setGenesisDelegation` if not NodeDriver[0m[31m (105ms)[0m
+    [32m  ✔[0m[90m Should not be able to call `deactivateValidator` if not NodeDriver[0m[31m (103ms)[0m
+    [32m  ✔[0m[90m Should not be able to call `deactivateValidator` with wrong status[0m[31m (149ms)[0m
+    [32m  ✔[0m[90m Should deactivate Validator[0m[33m (62ms)[0m
+    [32m  ✔[0m[90m Should not be able to call `sealEpochValidators` if not NodeDriver[0m[33m (62ms)[0m
+    [32m  ✔[0m[90m Should not be able to call `sealEpoch` if not NodeDriver[0m[31m (175ms)[0m
+[0m    Epoch getters[0m
+    [32m  ✔[0m[90m should return EpochvalidatorIds[0m[31m (112ms)[0m
+    [32m  ✔[0m[90m should return the Epoch Received Stake[0m[33m (44ms)[0m
+    [32m  ✔[0m[90m should return the Epoch Accumulated Reward Per Token[0m[33m (57ms)[0m
+    [32m  ✔[0m[90m should return the Epoch Accumulated Uptime[0m[33m (65ms)[0m
+    [32m  ✔[0m[90m should return the Epoch Accumulated Originated Txs Fee[0m[33m (50ms)[0m
+    [32m  ✔[0m[90m should return the Epoch Offline time [0m[33m (41ms)[0m
+    [32m  ✔[0m[90m should return Epoch Offline Blocks[0m[33m (58ms)[0m
+[0m    Unlock features[0m
+    [32m  ✔[0m[90m should fail if trying to unlock stake if not lockedup[0m[31m (78ms)[0m
+    [32m  ✔[0m[90m should fail if trying to unlock stake if amount is 0[0m[33m (73ms)[0m
+false
+    [32m  ✔[0m[90m should return if slashed[0m
+    [32m  ✔[0m[90m should fail if delegating to an unexisting validator[0m[31m (105ms)[0m
+    [32m  ✔[0m[90m should fail if delegating to an unexisting validator (2)[0m[33m (64ms)[0m
+[0m    SFC Rewards getters / Features[0m
+BN { negative: 0, words: [ 0, <1 empty item> ], length: 1, red: null }
+    [32m  ✔[0m[90m should return stashed rewards[0m[33m (44ms)[0m
+BN { negative: 0, words: [ 0, <1 empty item> ], length: 1, red: null }
+    [32m  ✔[0m[90m should return locked stake[0m[33m (45ms)[0m
+BN { negative: 0, words: [ 0, <1 empty item> ], length: 1, red: null }
+    [32m  ✔[0m[90m should return locked stake (2)[0m
+
+[0m  Contract: SFC[0m
+[0m    Staking / Sealed Epoch functions[0m
+    [32m  ✔[0m[90m Should setGenesisDelegation Validator[0m[31m (531ms)[0m
+
+[0m  Contract: SFC[0m
+[0m    Test Rewards Calculation[0m
+    [32m  ✔[0m[90m Calculation of validators rewards should be equal to 30%[0m[31m (473ms)[0m
+    [32m  ✔[0m[90m Should not be able withdraw if request does not exist[0m[33m (62ms)[0m
+    [32m  ✔[0m[90m Get stakes/get wr requests should correctly work after undelegate[0m[31m (5091ms)[0m
+    [32m  ✔[0m[90m Should not be able to undelegate 0 amount[0m[31m (1036ms)[0m
+    [32m  ✔[0m[90m Should not be able to undelegate if not enough unlocked stake[0m[31m (1240ms)[0m
+    [32m  ✔[0m[90m Should not be able to unlock if not enough unlocked stake[0m[31m (1089ms)[0m
+    [32m  ✔[0m[90m should return the unlocked stake[0m[31m (1140ms)[0m
+    [32m  ✔[0m[90m Should not be able to claim Rewards if 0 rewards[0m[31m (1970ms)[0m
+
+[0m  Contract: SFC[0m
+[0m    Test Calculation Rewards with Lockup[0m
+    [32m  ✔[0m[90m Should not be able to lock 0 amount[0m[31m (1432ms)[0m
+    [32m  ✔[0m[90m Should not be able to lock more than a year[0m[31m (1859ms)[0m
+    [32m  ✔[0m[90m Should not be able to lock more than validator lockup period[0m[31m (1271ms)[0m
+    [32m  ✔[0m[90m Should not be able to lock more than validator lockup period[0m[31m (1863ms)[0m
+    [32m  ✔[0m[90m Should be able to lock for 1 month[0m[31m (2904ms)[0m
+    [32m  ✔[0m[90m Should not unlock if not locked up FTM[0m[31m (2533ms)[0m
+    [32m  ✔[0m[90m Should not be able to unlock more than locked stake[0m[31m (3301ms)[0m
+    [32m  ✔[0m[90m Should scale unlocking penalty[0m
+    [32m  ✔[0m[90m Should unlock after period ended and stash rewards[0m[33m (50ms)[0m
+
+[0m  Contract: SFC[0m
+[0m    Test Rewards with lockup Calculation[0m
+    [32m  ✔[0m[90m Should not update slashing refund ratio[0m[31m (1415ms)[0m
+    [32m  ✔[0m[90m Should not sync if validator does not exist[0m[31m (663ms)[0m
+
+
+[92m [0m[32m 124 passing[0m[90m (18m)[0m
+
+-------------------------|----------|----------|----------|----------|----------------|
+File                     |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+-------------------------|----------|----------|----------|----------|----------------|
+ common/                 |      100 |    83.33 |      100 |      100 |                |
+  Decimal.sol            |      100 |      100 |      100 |      100 |                |
+  Initializable.sol      |      100 |    83.33 |      100 |      100 |                |
+ erc20/base/             |        0 |        0 |        0 |        0 |                |
+  ERC20.sol              |        0 |        0 |        0 |        0 |... 220,230,231 |
+  ERC20Burnable.sol      |        0 |      100 |        0 |        0 |       18,27,35 |
+  ERC20Detailed.sol      |        0 |      100 |        0 |        0 |... 24,31,39,55 |
+  ERC20Mintable.sol      |        0 |        0 |        0 |        0 |... 45,58,59,60 |
+  IERC20.sol             |      100 |      100 |      100 |      100 |                |
+  MinterRole.sol         |        0 |        0 |        0 |        0 |... 32,33,37,38 |
+  Roles.sol              |        0 |        0 |        0 |        0 |... 26,27,39,40 |
+ ownership/              |      100 |      100 |      100 |      100 |                |
+  Ownable.sol            |      100 |      100 |      100 |      100 |                |
+ sfc/                    |    76.55 |    57.98 |    77.95 |     76.2 |                |
+  NetworkInitializer.sol |        0 |      100 |        0 |        0 |    31,32,34,40 |
+  NodeDriver.sol         |    60.87 |       50 |    57.89 |    58.82 |... 489,500,516 |
+  SFC.sol                |    81.31 |    62.05 |    90.67 |     81.3 |... 9,1731,1732 |
+  StakeTokenizer.sol     |        0 |        0 |        0 |        0 |... 52,57,60,68 |
+  StakersConstants.sol   |      100 |      100 |      100 |      100 |                |
+ test/                   |      100 |      100 |       80 |      100 |                |
+  SFCI.sol               |      100 |      100 |      100 |      100 |                |
+  StubEvmWriter.sol      |      100 |      100 |       40 |      100 |                |
+  UnitTestSFC.sol        |      100 |      100 |      100 |      100 |                |
+ version/                |      100 |      100 |      100 |      100 |                |
+  Version.sol            |      100 |      100 |      100 |      100 |                |
+-------------------------|----------|----------|----------|----------|----------------|
+All files                |    69.77 |    54.05 |    65.95 |    69.52 |                |
+-------------------------|----------|----------|----------|----------|----------------|
+
+> Istanbul reports written to ./coverage/ and ./coverage.json
+> solidity-coverage cleaning up, shutting down ganache server
+Done in 1075.15s.

@@ -1768,6 +1768,73 @@ contract('SFC', async ([firstValidator, testValidator, firstDelegator, secondDel
 
             await expectRevert(this.sfc.unlockStake(testValidator3ID, amount18('10'), { from: thirdDelegator }), 'not enough locked stake');
         });
+
+        it('Should scale unlocking penalty', async () => {
+            const validatorCommission = await this.sfc.validatorCommission()
+            if (validatorCommission != "1000000000000000000") {
+                await sealEpoch(this.sfc, (new BN(1000)).toString());
+
+                await this.sfc.delegate(testValidator3ID, {
+                    from: thirdDelegator,
+                    value: amount18('10'),
+                });
+
+                await this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 14), amount18('1'),
+                    { from: thirdDelegator });
+
+                await sealEpoch(this.sfc, (new BN(100)).toString());
+
+                expect(await this.sfc.unlockStake.call(testValidator3ID, amount18('1'), { from: thirdDelegator })).to.be.bignumber.equal(amount18('0.085410180572851805'));
+                expect(await this.sfc.unlockStake.call(testValidator3ID, amount18('0.5'), { from: thirdDelegator })).to.be.bignumber.equal(amount18('0.042705090286425902'));
+                expect(await this.sfc.unlockStake.call(testValidator3ID, amount18('0.01'), { from: thirdDelegator })).to.be.bignumber.equal(amount18('0.000854101805728517'));
+                await this.sfc.unlockStake(testValidator3ID, amount18('0.5'), { from: thirdDelegator });
+                await expectRevert(this.sfc.unlockStake(testValidator3ID, amount18('0.51'), { from: thirdDelegator }), 'not enough locked stake');
+                expect(await this.sfc.unlockStake.call(testValidator3ID, amount18('0.5'), { from: thirdDelegator })).to.be.bignumber.equal(amount18('0.042705090286425903'));
+                expect(await this.sfc.unlockStake.call(testValidator3ID, amount18('0.01'), { from: thirdDelegator })).to.be.bignumber.equal(amount18('0.000854101805728517'));
+            }
+        });
+
+        it('Should unlock after period ended and stash rewards', async () => {
+            const validatorCommission = await this.sfc.validatorCommission()
+            if (validatorCommission != "1000000000000000000") {
+                await sealEpoch(this.sfc, (new BN(1000)).toString());
+
+                await this.sfc.delegate(testValidator3ID, {
+                    from: thirdDelegator,
+                    value: amount18('10'),
+                });
+
+                let unlockedStake = await this.sfc.getUnlockedStake(thirdDelegator, testValidator3ID, { from: thirdDelegator });
+                let pendingRewards = await this.sfc.pendingRewards(thirdDelegator, testValidator3ID, { from: thirdDelegator });
+
+                expect(unlockedStake.toString()).to.equal('10000000000000000000');
+                expect(web3.utils.fromWei(pendingRewards.toString(), 'ether')).to.equal('0');
+                await this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 14), amount18('1'),
+                    { from: thirdDelegator });
+
+                unlockedStake = await this.sfc.getUnlockedStake(thirdDelegator, testValidator3ID, { from: thirdDelegator });
+                pendingRewards = await this.sfc.pendingRewards(thirdDelegator, testValidator3ID, { from: thirdDelegator });
+
+                expect(unlockedStake.toString()).to.equal('9000000000000000000');
+                expect(web3.utils.fromWei(pendingRewards.toString(), 'ether')).to.equal('0');
+                await sealEpoch(this.sfc, (new BN(60 * 60 * 24 * 14)).toString());
+
+                unlockedStake = await this.sfc.getUnlockedStake(thirdDelegator, testValidator3ID, { from: thirdDelegator });
+                pendingRewards = await this.sfc.pendingRewards(thirdDelegator, testValidator3ID, { from: thirdDelegator });
+
+                expect(unlockedStake.toString()).to.equal('9000000000000000000');
+                expect(web3.utils.fromWei(pendingRewards.toString(), 'ether')).to.equal('17682.303362391033619905');
+
+                await sealEpoch(this.sfc, (new BN(60 * 60 * 24 * 14)).toString());
+                pendingRewards = await this.sfc.pendingRewards(thirdDelegator, testValidator3ID, { from: thirdDelegator });
+
+                unlockedStake = await this.sfc.getUnlockedStake(thirdDelegator, testValidator3ID, { from: thirdDelegator });
+                expect(unlockedStake.toString()).to.equal('10000000000000000000');
+                expect(web3.utils.fromWei(pendingRewards.toString(), 'ether')).to.equal('136316.149516237187466057');
+
+                await this.sfc.stashRewards(thirdDelegator, testValidator3ID, { from: thirdDelegator });
+            }
+        });
     });
 });
 

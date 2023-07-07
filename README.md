@@ -236,6 +236,7 @@ false
       ✓ Should be able to lock for 1 month (417ms)
       ✓ Should not unlock if not locked up FTM (453ms)
       ✓ Should not be able to unlock more than locked stake (464ms)
+      ✓ Should scale unlocking penalty (851ms)
       ✓ Should unlock after period ended and stash rewards (834ms)
 
   Contract: SFC
@@ -244,7 +245,7 @@ false
       ✓ Should not sync if validator does not exist
 
 
-  125 passing (2m)
+  124 passing (18m)
 
 -------------------------|----------|----------|----------|----------|----------------|
 File                     |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -262,10 +263,10 @@ File                     |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered 
   Roles.sol              |        0 |        0 |        0 |        0 |... 26,27,39,40 |
  ownership/              |      100 |      100 |      100 |      100 |                |
   Ownable.sol            |      100 |      100 |      100 |      100 |                |
- sfc/                    |    80.56 |    60.11 |    78.74 |    80.21 |                |
+ sfc/                    |    76.55 |    57.98 |    77.95 |     76.2 |                |
   NetworkInitializer.sol |        0 |      100 |        0 |        0 |    31,32,34,40 |
   NodeDriver.sol         |    60.87 |       50 |    57.89 |    58.82 |... 306,313,322 |
-  SFC.sol                |    86.08 |    64.46 |       92 |    86.07 |... 5,1456,1481 |
+  SFC.sol                |    81.31 |    62.05 |    90.67 |     81.3 |... 9,1731,1732 |
   StakeTokenizer.sol     |        0 |        0 |        0 |        0 |... 52,57,60,68 |
   StakersConstants.sol   |      100 |      100 |      100 |      100 |                |
  test/                   |      100 |      100 |       80 |      100 |                |
@@ -275,7 +276,7 @@ File                     |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered 
  version/                |      100 |      100 |      100 |      100 |                |
   Version.sol            |      100 |      100 |      100 |      100 |                |
 -------------------------|----------|----------|----------|----------|----------------|
-All files                |    73.06 |    55.86 |    66.49 |    72.82 |                |
+All files                |    69.77 |    54.05 |    65.95 |    69.52 |                |
 -------------------------|----------|----------|----------|----------|----------------|
 ```
 
