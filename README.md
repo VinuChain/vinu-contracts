@@ -4,6 +4,33 @@
 
 The project is supported on all UNIX (and UNIX-like) OS's and not supported on Windows.
 
+## Dependencies
+
+Make sure you have docker (>= v20) installed.
+
+docker -v
+```
+
+Make sure you have node (>= v16.17.0) and npm (>= v8.18.0) installed.
+
+```bash
+node -v
+npm -v
+```
+
+Make sure you have yarn (>= v1.22.19) installed.
+
+```bash
+yarn -v
+```
+
+Make sure you have ganache-cli (>= v7.8.0) and truffle (>= v5.10.2) installed.
+
+```bash
+yarn ganache-cli --version
+yarn truffle --version
+```
+
 ## Build
 
 Make sure you have docker (>= v20) installed.
@@ -16,6 +43,8 @@ If it's installed build the project.
 
 ```bash
 $ yarn
+$ npm i ganache-cli
+$ npm i truffle
 $ make
 ```
 

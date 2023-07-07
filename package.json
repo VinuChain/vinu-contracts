@@ -44,6 +44,8 @@
   "author": "Fantom Foundation",
   "license": "MIT",
   "dependencies": {
-    "npm": "^7.6.3"
+    "ganache-cli": "^6.12.2",
+    "npm": "^7.6.3",
+    "truffle": "^5.10.2"
   }
 }
