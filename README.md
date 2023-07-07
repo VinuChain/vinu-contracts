@@ -8,6 +8,7 @@ The project is supported on all UNIX (and UNIX-like) OS's and not supported on W
 
 Make sure you have docker (>= v20) installed.
 
+```bash
 docker -v
 ```
 
@@ -24,7 +25,7 @@ Make sure you have yarn (>= v1.22.19) installed.
 yarn -v
 ```
 
-Make sure you have ganache-cli (>= v7.8.0) and truffle (>= v5.10.2) installed.
+Make sure you have ganache-cli (= v7.8.0) and truffle (= v5.10.2) installed.
 
 ```bash
 yarn ganache-cli --version
@@ -32,14 +33,6 @@ yarn truffle --version
 ```
 
 ## Build
-
-Make sure you have docker (>= v20) installed.
-
-```bash
-docker -v
-```
-
-If it's installed build the project.
 
 ```bash
 $ yarn
