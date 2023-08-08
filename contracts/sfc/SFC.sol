@@ -33,6 +33,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     NodeDriverAuth internal node;
 
     uint256 public currentSealedEpoch;
+    address public genesisValidator;
     mapping(uint256 => Validator) public getValidator;
     mapping(address => uint256) public getValidatorID;
     mapping(uint256 => bytes) public getValidatorPubkey;
@@ -469,6 +470,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         if (validatorID > lastValidatorID) {
             lastValidatorID = validatorID;
         }
+        genesisValidator = auth;
     }
 
     /**
@@ -829,12 +831,21 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
             requestEpoch = getValidator[toValidatorID].deactivatedEpoch;
         }
 
+        uint256 wPeriodTime;
+        uint256 wPeriodEpochs;
+        if (getValidatorID[delegator] == 0 && delegator != genesisValidator) {
+            wPeriodTime = withdrawalPeriodTime();
+            wPeriodEpochs = withdrawalPeriodEpochs();
+        } else {
+            wPeriodTime = withdrawalPeriodTimeValidator();
+            wPeriodEpochs = withdrawalPeriodEpochsValidator();
+        }
         require(
-            _now() >= requestTime + withdrawalPeriodTime(),
+            _now() >= requestTime + wPeriodTime,
             "not enough time passed"
         );
         require(
-            currentEpoch() >= requestEpoch + withdrawalPeriodEpochs(),
+            currentEpoch() >= requestEpoch + wPeriodEpochs,
             "not enough epochs passed"
         );
 

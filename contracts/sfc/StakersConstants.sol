@@ -14,11 +14,11 @@ contract StakersConstants {
     uint256 internal constant CHEATER_MASK = DOUBLESIGN_BIT;
 
     /**
-     * @dev Minimum amount of stake for a validator, i.e., 500000 FTM
+     * @dev Minimum amount of stake for a validator, i.e., 200000 FTM
      */
     function minSelfStake() public pure returns (uint256) {
-        // 500000 FTM
-        return 3175 * 1e14;
+        // 200000 FTM
+        return 200000 * 1e18;
     }
 
     /**
@@ -71,11 +71,20 @@ contract StakersConstants {
      * @dev the number of epochs that stake is locked
      */
     function withdrawalPeriodEpochs() public pure returns (uint256) {
-        return 3;
+        return 144;
     }
 
     function withdrawalPeriodTime() public pure returns (uint256) {
-        // 7 days
-        return 60 * 60 * 24 * 7;
+        // 1 day
+        return 60 * 60 * 24;
+    }
+
+    function withdrawalPeriodEpochsValidator() public pure returns (uint256) {
+        return 144 * 30;
+    }
+
+    function withdrawalPeriodTimeValidator() public pure returns (uint256) {
+        // 30 days
+        return 60 * 60 * 24 * 30;
     }
 }
