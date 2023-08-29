@@ -71,7 +71,7 @@ contract StakersConstants {
      * @dev the number of epochs that stake is locked
      */
     function withdrawalPeriodEpochs() public pure returns (uint256) {
-        return 144;
+        return 6;
     }
 
     function withdrawalPeriodTime() public pure returns (uint256) {
@@ -80,7 +80,7 @@ contract StakersConstants {
     }
 
     function withdrawalPeriodEpochsValidator() public pure returns (uint256) {
-        return 144 * 30;
+        return 6 * 30;
     }
 
     function withdrawalPeriodTimeValidator() public pure returns (uint256) {
