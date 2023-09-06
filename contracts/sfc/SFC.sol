@@ -422,7 +422,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         currentSealedEpoch = sealedEpoch;
         node = NodeDriverAuth(nodeDriver);
         totalSupply = _totalSupply;
-        baseRewardPerSecond = 6.183414351851851852 * 1e18;
+        baseRewardPerSecond = 0.93 * 1e18;
         offlinePenaltyThresholdBlocksNum = 1000;
         offlinePenaltyThresholdTime = 3 days;
         getEpochSnapshot[sealedEpoch].endTime = _now();
