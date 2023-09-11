@@ -17,6 +17,9 @@ import "./NodeDriver.sol";
 contract SFC is Initializable, Ownable, StakersConstants, Version {
     using SafeMath for uint256;
 
+    uint256 public constant MIN_OFFLINE_PENALTY_THRESHOLD_TIME = 30 minutes;
+    uint256 public constant MIN_OFFLINE_PENALTY_THRESHOLD_BLOCKS_NUM = 30;
+
     /**
      * @dev The staking for validation
      */
@@ -423,8 +426,8 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         node = NodeDriverAuth(nodeDriver);
         totalSupply = _totalSupply;
         baseRewardPerSecond = 0.93 * 1e18;
-        offlinePenaltyThresholdBlocksNum = 1000;
-        offlinePenaltyThresholdTime = 3 days;
+        offlinePenaltyThresholdBlocksNum = 120;
+        offlinePenaltyThresholdTime = 2 hours;
         getEpochSnapshot[sealedEpoch].endTime = _now();
 
         stakes.push(
@@ -715,14 +718,16 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
 
         uint256 selfStakeAfterwards = getSelfStake(toValidatorID);
         if (selfStakeAfterwards != 0) {
-            require(
-                selfStakeAfterwards >= minSelfStake(),
-                "insufficient self-stake"
-            );
-            require(
-                _checkDelegatedStakeLimit(toValidatorID),
-                "validator's delegations limit is exceeded"
-            );
+            if (getValidator[toValidatorID].status == OK_STATUS) {
+                require(
+                    selfStakeAfterwards >= minSelfStake(),
+                    "insufficient self-stake"
+                );
+                require(
+                    _checkDelegatedStakeLimit(toValidatorID),
+                    "validator's delegations limit is exceeded"
+                );
+            }
         } else {
             _setValidatorDeactivated(toValidatorID, WITHDRAWN_BIT);
         }
@@ -1158,6 +1163,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         internal
         returns (Rewards memory rewards)
     {
+        require(_checkAllowedToWithdraw(delegator, toValidatorID), "outstanding sFTM balance");
         _stashRewards(delegator, toValidatorID);
         rewards = _rewardsStash[delegator][toValidatorID];
         uint256 totalReward = rewards
@@ -1281,6 +1287,8 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         external
         onlyOwner
     {
+        require(blocksNum >= MIN_OFFLINE_PENALTY_THRESHOLD_BLOCKS_NUM, "too low penalty blocks num");
+        require(time >= MIN_OFFLINE_PENALTY_THRESHOLD_TIME, "too low penalty time");
         offlinePenaltyThresholdTime = time;
         offlinePenaltyThresholdBlocksNum = blocksNum;
         emit UpdatedOfflinePenaltyThreshold(blocksNum, time);
@@ -1310,38 +1318,6 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      */
     function updateStakeTokenizerAddress(address addr) external onlyOwner {
         stakeTokenizerAddress = addr;
-    }
-
-    /**
-     * @dev UpdateTotalSupply allows to fix the different between actual 
-     * total supply and totalSupply field due to the
-     * bug fixed in 3c828b56b7cd32ea058a954fad3cd726e193cc77
-     * @param diff Total supply diff
-     */
-    function updateTotalSupply(int256 diff) external onlyOwner {
-        if (diff >= 0) {
-            totalSupply += uint256(diff);
-        } else {
-            totalSupply -= uint256(-diff);
-        }
-    }
-
-    /**
-     * @dev MintFTM allows SFC owner to mint an arbitrary amount of 
-     * FTM tokens. Justification is a human readable description of 
-     * why tokens were minted (e.g. because ERC20 FTM tokens were burnt).
-     * @param receiver Receiver address
-     * @param amount Amount to mint
-     * @param justification Extra info
-     */
-    function mintFTM(
-        address payable receiver,
-        uint256 amount,
-        string calldata justification
-    ) external onlyOwner {
-        _mintNativeToken(amount);
-        receiver.transfer(amount);
-        emit InflatedFTM(receiver, amount, justification);
     }
 
     function _sealEpoch_offline(
