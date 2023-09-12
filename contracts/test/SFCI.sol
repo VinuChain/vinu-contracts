@@ -151,4 +151,8 @@ interface SFCI {
     function withdrawalPeriodEpochs() external pure returns (uint256);
 
     function withdrawalPeriodTime() external pure returns (uint256);
+
+    function offlinePenaltyThresholdTime() external view returns (uint256);
+
+    function offlinePenaltyThresholdBlocksNum() external view returns (uint256);
 }

@@ -17,8 +17,8 @@ import "./NodeDriver.sol";
 contract SFC is Initializable, Ownable, StakersConstants, Version {
     using SafeMath for uint256;
 
-    uint256 public constant MIN_OFFLINE_PENALTY_THRESHOLD_TIME = 30 minutes;
-    uint256 public constant MIN_OFFLINE_PENALTY_THRESHOLD_BLOCKS_NUM = 30;
+    uint256 public constant MIN_OFFLINE_PENALTY_THRESHOLD_TIME = 20 minutes;
+    uint256 public constant MIN_OFFLINE_PENALTY_THRESHOLD_BLOCKS_NUM = 20;
 
     /**
      * @dev The staking for validation

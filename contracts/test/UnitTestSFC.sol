@@ -394,6 +394,10 @@ interface SFCUnitTestI {
 
     function allowedNonNodeCalls() external view returns (bool);
 
+    function offlinePenaltyThresholdTime() external view returns (uint256);
+
+    function offlinePenaltyThresholdBlocksNum() external view returns (uint256);
+
     function updateVoteBookAddress(address v) external;
 
     function voteBookAddress(address v) external view returns (address);
