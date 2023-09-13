@@ -52,9 +52,9 @@ module.exports = {
         },
         coverage: {
             host: '127.0.0.1',
-            port: 8545,
+            port: 8555,
             network_id: '*', // Any network (default: none)
-            defaultEtherBalance: 500,
+            defaultEtherBalance: 5000000000,
         },
         // Another network with more advanced options...
         // advanced: {

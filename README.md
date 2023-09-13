@@ -25,7 +25,7 @@ Make sure you have yarn (>= v1.22.19) installed.
 yarn -v
 ```
 
-Make sure you have ganache-cli (= v7.8.0) and truffle (= v5.10.2) installed.
+Make sure you have ganache-cli (= v6.12.2) and truffle (= v5.10.2) installed.
 
 ```bash
 yarn ganache-cli --version
@@ -54,7 +54,7 @@ To run tests
 
 ```bash
 $ make
-$ yarn ganache-cli --gasLimit 50000000 --gasPrice 0 --allowUnlimitedContractSize --defaultBalanceEther 5000000
+$ yarn ganache-cli --gasLimit 50000000 --gasPrice 0 --allowUnlimitedContractSize --defaultBalanceEther 5000000000
 $ yarn test
 ```
 
@@ -62,7 +62,6 @@ To run coverage
 
 ```bash
 $ make
-$ yarn ganache-cli --gasLimit 50000000 --gasPrice 0 --allowUnlimitedContractSize --defaultBalanceEther 5000000
 $ yarn truffle run coverage
 ```
 
