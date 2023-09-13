@@ -25,19 +25,10 @@ Make sure you have yarn (>= v1.22.19) installed.
 yarn -v
 ```
 
-Make sure you have ganache-cli (= v6.12.2) and truffle (= v5.10.2) installed.
-
-```bash
-yarn ganache-cli --version
-yarn truffle --version
-```
-
 ## Build
 
 ```bash
 $ yarn
-$ npm i ganache-cli
-$ npm i truffle
 $ make
 ```
 
@@ -53,7 +44,6 @@ Tests are found in the `./test/` folder.
 To run tests
 
 ```bash
-$ make
 $ yarn ganache-cli --gasLimit 50000000 --gasPrice 0 --allowUnlimitedContractSize --defaultBalanceEther 5000000000
 $ yarn test
 ```
@@ -61,9 +51,10 @@ $ yarn test
 To run coverage
 
 ```bash
-$ make
 $ yarn truffle run coverage
 ```
+
+It is recommended to close all other applications while running tests, otherwise tests may fail due to time out.
 
 ### Contracts
 
@@ -76,26 +67,25 @@ Solidity smart contracts are found in `./contracts/`.
   Contract: SFC
     Nde
       ✓ Should migrate to New address (67ms)
-      ✓ Should not migrate if not owner (56ms)
-      ✓ Should not copyCode if not owner (41ms)
-      ✓ Should copyCode (49ms)
-      ✓ Should not copyCode if not SFC address (43ms)
-      ✓ Should update network version (43ms)
-      ✓ Should not update network version if not owner (38ms)
-      ✓ Should advance epoch
-      ✓ Should not set a new storage if not backend address (43ms)
-      ✓ Should not advance epoch if not owner (43ms)
-      ✓ Should not set backend if not backend address
-      ✓ Should not swap code if not backend address (40ms)
-      ✓ Should not be possible add a Genesis Validator through NodeDriver if not called by Node (55ms)
-      ✓ Should not be possible to deactivate a validator through NodeDriver if not called by Node (40ms)
-      ✓ Should not be possible to add a Genesis Delegation through NodeDriver if not called by node
-      ✓ Should not be possible to seal Epoch Validators through NodeDriver if not called by node
-      ✓ Should not be possible to seal Epoch through NodeDriver if not called by node (40ms)
+      ✓ Should not migrate if not owner (493ms)
+      ✓ Should not copyCode if not owner (59ms)
+      ✓ Should copyCode (44ms)
+      ✓ Should update network version (68ms)
+      ✓ Should not update network version if not owner (55ms)
+      ✓ Should advance epoch (64ms)
+      ✓ Should not set a new storage if not backend address (73ms)
+      ✓ Should not advance epoch if not owner (103ms)
+      ✓ Should not set backend if not backend address (91ms)
+      ✓ Should not swap code if not backend address (93ms)
+      ✓ Should not be possible add a Genesis Validator through NodeDriver if not called by Node (148ms)
+      ✓ Should not be possible to deactivate a validator through NodeDriver if not called by Node (233ms)
+      ✓ Should not be possible to add a Genesis Delegation through NodeDriver if not called by node (100ms)
+      ✓ Should not be possible to seal Epoch Validators through NodeDriver if not called by node (76ms)
+      ✓ Should not be possible to seal Epoch through NodeDriver if not called by node (133ms)
     Genesis Validator
-      ✓ Set Genesis Validator with bad Status (44ms)
-      ✓ should reject sealEpoch if not called by Node
-      ✓ should reject SealEpochValidators if not called by Node
+      ✓ Set Genesis Validator with bad Status (78ms)
+      ✓ should reject sealEpoch if not called by Node (63ms)
+      ✓ should reject SealEpochValidators if not called by Node (63ms)
 
   Contract: SFC
     Basic functions
@@ -103,49 +93,46 @@ Solidity smart contracts are found in `./contracts/`.
         ✓ Returns current Epoch
         ✓ Returns minimum amount to stake for a Validator
         ✓ Returns the maximum ratio of delegations a validator can have
-        ✓ Returns commission fee in percentage a validator will get from a delegation
-        ✓ Returns commission fee in percentage a validator will get from a contract
         ✓ Returns the ratio of the reward rate at base rate (without lockup)
         ✓ Returns the minimum duration of a stake/delegation lockup
-        ✓ Returns the maximum duration of a stake/delegation lockup
-        ✓ Returns the period of time that stake is locked
-        ✓ Returns the number of epochs that stake is locked
-        ✓ Returns the version of the current implementation
-        ✓ Should create a Validator and return the ID (99ms)
-        ✓ Should fail to create a Validator insufficient self-stake (39ms)
-        ✓ Should fail if pubkey is empty (40ms)
-        ✓ Should create two Validators and return the correct last validator ID (193ms)
-        ✓ Should return Delegation (118ms)
-        ✓ Should reject if amount is insufficient for self-stake (61ms)
+        ✓ Returns the maximum duration of a stake/delegation lockup (41ms)
+        ✓ Returns the period of time that stake is locked (39ms)
+        ✓ Returns the number of epochs that stake is locked (64ms)
+        ✓ Returns the version of the current implementation (325ms)
+        ✓ Should create a Validator and return the ID (568ms)
+        ✓ Should fail to create a Validator insufficient self-stake (77ms)
+        ✓ Should fail if pubkey is empty (70ms)
+        ✓ Should create two Validators and return the correct last validator ID (822ms)
+        ✓ Should return Delegation (551ms)
+        ✓ Should reject if amount is insufficient for self-stake (95ms)
         ✓ Returns current Epoch
-        ✓ Should return current Sealed Epoch
+        ✓ Should return current Sealed Epoch (224ms)
         ✓ Should return Now()
-        ✓ Should return getTime()
+        ✓ Should return getTime() (44ms)
       Initialize
         ✓ Should have been initialized with firstValidator
       Ownable
-        ✓ Should return the owner of the contract
-        ✓ Should return true if the caller is the owner of the contract
-        ✓ Should return address(0) if owner leaves the contract without owner (58ms)
-        ✓ Should transfer ownership to the new owner (60ms)
-        ✓ Should not be able to transfer ownership if not owner
-        ✓ Should not be able to transfer ownership to address(0)
+        ✓ Should return the owner of the contract (153ms)
+        ✓ Should return true if the caller is the owner of the contract (92ms)
+        ✓ Should return address(0) if owner leaves the contract without owner (86ms)
+        ✓ Should transfer ownership to the new owner (145ms)
+        ✓ Should not be able to transfer ownership if not owner (93ms)
+        ✓ Should not be able to transfer ownership to address(0) (112ms)
       Events emitters
-        ✓ Should call updateNetworkRules
-        ✓ Should call updateOfflinePenaltyThreshold
+        ✓ Should call updateNetworkRules (68ms)
+        ✓ Should call updateOfflinePenaltyThreshold (73ms)
 
   Contract: SFC
     Prevent Genesis Call if not node
-      ✓ Should not be possible add a Genesis Validator if called not by node (53ms)
-      ✓ Should not be possible add a Genesis Delegation if called not by node
+      ✓ Should not be possible add a Genesis Validator if called not by node (63ms)
+      ✓ Should not be possible add a Genesis Delegation if called not by node (54ms)
     Create validators
-      ✓ Should create Validators (216ms)
-      ✓ Should return the right ValidatorID by calling getValidatorID (275ms)
-      ✓ Should not be able to stake if Validator not created yet (307ms)
-      ✓ Should stake with different delegators (403ms)
-      ✓ Should return the amount of delegated for each Delegator (704ms)
-      ✓ Should return the total of received Stake (238ms)
-      ✓ Should return the total of received Stake (232ms)
+      ✓ Should create Validators (845ms)
+      ✓ Should return the right ValidatorID by calling getValidatorID (1016ms)
+      ✓ Should not be able to stake if Validator not created yet (1155ms)
+      ✓ Should stake with different delegators (2030ms)
+      ✓ Should return the amount of delegated for each Delegator (2865ms)
+      ✓ Should return the total of received Stake (1209ms)
 
   Contract: SFC
     Returns Validator
@@ -157,94 +144,95 @@ Solidity smart contracts are found in `./contracts/`.
       ✓ Should returns Validator's Created Time
       ✓ Should returns Validator's Auth (address)
     EpochSnapshot
-      ✓ Returns stashedRewardsUntilEpoch (267ms)
+      ✓ Returns stashedRewardsUntilEpoch (987ms)
     Methods tests
-      ✓ checking createValidator function (395ms)
-      ✓ checking sealing epoch (481ms)
+      ✓ checking createValidator function (1571ms)
+      ✓ checking sealing epoch (1816ms)
 
   Contract: SFC
     Staking / Sealed Epoch functions
-      ✓ Should return claimed Rewards until Epoch (458ms)
-      ✓ Check pending Rewards of delegators (333ms)
-      ✓ Check if pending Rewards have been increased after sealing Epoch (466ms)
-      ✓ Should increase balances after claiming Rewards (415ms)
-      ✓ Should increase stake after restaking Rewards (562ms)
-      ✓ Should increase locked stake after restaking Rewards (643ms)
-      ✓ Should return stashed Rewards (411ms)
-      ✓ Should update the validator on node (48ms)
-      ✓ Should not be able to deactivate validator if not Node (61ms)
-      ✓ Should seal Epochs (187ms)
-      ✓ Should seal Epoch on Validators (167ms)
+      ✓ Should return claimed Rewards until Epoch (2111ms)
+      ✓ Check pending Rewards of delegators (1937ms)
+      ✓ Check if pending Rewards have been increased after sealing Epoch (2805ms)
+      ✓ Should increase balances after claiming Rewards (2452ms)
+      ✓ Should increase stake after restaking Rewards (2196ms)
+      ✓ Should increase locked stake after restaking Rewards (2152ms)
+      ✓ Should return stashed Rewards (2160ms)
+      ✓ Should update the validator on node (282ms)
+      ✓ Should not be able to deactivate validator if not Node (136ms)
+      ✓ Should seal Epochs (409ms)
+      ✓ Should seal Epoch on Validators (375ms)
     Stake lockup
-      ✓ Check pending Rewards of delegators (301ms)
-      ✓ Check if pending Rewards have been increased after sealing Epoch (473ms)
-      ✓ Should increase balances after claiming Rewards (440ms)
-      ✓ Should return stashed Rewards (438ms)
-      ✓ Should return pending rewards after unlocking and re-locking (3653ms)
+      ✓ Check pending Rewards of delegators (1291ms)
+      ✓ Check if pending Rewards have been increased after sealing Epoch (1742ms)
+      ✓ Should increase balances after claiming Rewards (1617ms)
+      ✓ Should return stashed Rewards (1355ms)
+      ✓ Should return pending rewards after unlocking and re-locking (9584ms)
     NodeDriver
-      ✓ Should not be able to call `setGenesisValidator` if not NodeDriver (45ms)
-      ✓ Should not be able to call `setGenesisDelegation` if not NodeDriver
-      ✓ Should not be able to call `deactivateValidator` if not NodeDriver
-      ✓ Should not be able to call `deactivateValidator` with wrong status (40ms)
-      ✓ Should deactivate Validator (41ms)
-      ✓ Should not be able to call `sealEpochValidators` if not NodeDriver
-      ✓ Should not be able to call `sealEpoch` if not NodeDriver (68ms)
+      ✓ Should not be able to call `setGenesisValidator` if not NodeDriver (93ms)
+      ✓ Should not be able to call `setGenesisDelegation` if not NodeDriver (86ms)
+      ✓ Should not be able to call `deactivateValidator` if not NodeDriver (81ms)
+      ✓ Should not be able to call `deactivateValidator` with wrong status (59ms)
+      ✓ Should deactivate Validator (95ms)
+      ✓ Should not be able to call `sealEpochValidators` if not NodeDriver (111ms)
+      ✓ Should not be able to call `sealEpoch` if not NodeDriver (214ms)
     Epoch getters
-      ✓ should return EpochvalidatorIds
-      ✓ should return the Epoch Received Stake
-      ✓ should return the Epoch Accumulated Reward Per Token
-      ✓ should return the Epoch Accumulated Uptime
-      ✓ should return the Epoch Accumulated Originated Txs Fee
-      ✓ should return the Epoch Offline time 
-      ✓ should return Epoch Offline Blocks
+      ✓ should return EpochvalidatorIds (105ms)
+      ✓ should return the Epoch Received Stake (86ms)
+      ✓ should return the Epoch Accumulated Reward Per Token (91ms)
+      ✓ should return the Epoch Accumulated Uptime (83ms)
+      ✓ should return the Epoch Accumulated Originated Txs Fee (135ms)
+      ✓ should return the Epoch Offline time  (74ms)
+      ✓ should return Epoch Offline Blocks (122ms)
     Unlock features
-      ✓ should fail if trying to unlock stake if not lockedup
-      ✓ should fail if trying to unlock stake if amount is 0
+      ✓ should fail if trying to unlock stake if not lockedup (87ms)
+      ✓ should fail if trying to unlock stake if amount is 0 (85ms)
 false
-      ✓ should return if slashed
-      ✓ should fail if delegating to an unexisting validator (40ms)
-      ✓ should fail if delegating to an unexisting validator (2)
+      ✓ should return if slashed (61ms)
+      ✓ should fail if delegating to an unexisting validator (109ms)
+      ✓ should fail if delegating to an unexisting validator (2) (141ms)
     SFC Rewards getters / Features
-<BN: 0>
+BN { negative: 0, words: [ 0, <1 empty item> ], length: 1, red: null }
       ✓ should return stashed rewards
-<BN: 0>
-      ✓ should return locked stake
-<BN: 0>
+BN { negative: 0, words: [ 0, <1 empty item> ], length: 1, red: null }
+      ✓ should return locked stake (58ms)
+BN { negative: 0, words: [ 0, <1 empty item> ], length: 1, red: null }
       ✓ should return locked stake (2)
 
   Contract: SFC
     Staking / Sealed Epoch functions
-      ✓ Should setGenesisDelegation Validator (64ms)
+      ✓ Should setGenesisDelegation Validator (141ms)
 
   Contract: SFC
     Test Rewards Calculation
-      ✓ Calculation of validators rewards should be equal to 30% (245ms)
-      ✓ Should not be able withdraw if request does not exist
-      ✓ Should not be able to undelegate 0 amount (246ms)
-      ✓ Should not be able to undelegate if not enough unlocked stake (246ms)
-      ✓ Should not be able to unlock if not enough unlocked stake (302ms)
-      ✓ should return the unlocked stake (220ms)
-      ✓ Should not be able to claim Rewards if 0 rewards (515ms)
+      ✓ Calculation of validators rewards should be equal to 30% (1089ms)
+      ✓ Should not be able withdraw if request does not exist (222ms)
+      ✓ Get stakes/get wr requests should correctly work after undelegate (5867ms)
+      ✓ Should not be able to undelegate 0 amount (763ms)
+      ✓ Should not be able to undelegate if not enough unlocked stake (920ms)
+      ✓ Should not be able to unlock if not enough unlocked stake (1171ms)
+      ✓ should return the unlocked stake (968ms)
+      ✓ Should not be able to claim Rewards if 0 rewards (2181ms)
 
   Contract: SFC
     Test Calculation Rewards with Lockup
-      ✓ Should not be able to lock 0 amount (218ms)
-      ✓ Should not be able to lock more than a year (270ms)
-      ✓ Should not be able to lock more than validator lockup period (273ms)
-      ✓ Should not be able to lock more than validator lockup period (260ms)
-      ✓ Should be able to lock for 1 month (417ms)
-      ✓ Should not unlock if not locked up FTM (453ms)
-      ✓ Should not be able to unlock more than locked stake (464ms)
-      ✓ Should scale unlocking penalty (851ms)
-      ✓ Should unlock after period ended and stash rewards (834ms)
+      ✓ Should not be able to lock 0 amount (1087ms)
+      ✓ Should not be able to lock more than a year (1710ms)
+      ✓ Should not be able to lock more than validator lockup period (2107ms)
+      ✓ Should not be able to lock more than validator lockup period (1318ms)
+      ✓ Should be able to lock for 1 month (3671ms)
+      ✓ Should not unlock if not locked up FTM (3067ms)
+      ✓ Should not be able to unlock more than locked stake (2180ms)
+      ✓ Unlocking penalty should be 0 for delegator (5163ms)
+      ✓ Should unlock after period ended and stash rewards will be reverted (3386ms)
 
   Contract: SFC
     Test Rewards with lockup Calculation
-      ✓ Should not update slashing refund ratio (377ms)
-      ✓ Should not sync if validator does not exist
+      ✓ Should not update slashing refund ratio (1897ms)
+      ✓ Should not sync if validator does not exist (508ms)
 
 
-  124 passing (18m)
+  123 passing (20m)
 
 -------------------------|----------|----------|----------|----------|----------------|
 File                     |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
@@ -262,12 +250,12 @@ File                     |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered 
   Roles.sol              |        0 |        0 |        0 |        0 |... 26,27,39,40 |
  ownership/              |      100 |      100 |      100 |      100 |                |
   Ownable.sol            |      100 |      100 |      100 |      100 |                |
- sfc/                    |    76.55 |    57.98 |    77.95 |     76.2 |                |
+ sfc/                    |    79.45 |    61.22 |    78.74 |    79.06 |                |
   NetworkInitializer.sol |        0 |      100 |        0 |        0 |    31,32,34,40 |
-  NodeDriver.sol         |    60.87 |       50 |    57.89 |    58.82 |... 306,313,322 |
-  SFC.sol                |    81.31 |    62.05 |    90.67 |     81.3 |... 9,1731,1732 |
+  NodeDriver.sol         |    60.87 |       50 |    57.89 |    58.82 |... 489,500,516 |
+  SFC.sol                |    85.07 |    65.52 |    94.52 |    85.01 |... 0,1661,1686 |
   StakeTokenizer.sol     |        0 |        0 |        0 |        0 |... 52,57,60,68 |
-  StakersConstants.sol   |      100 |      100 |      100 |      100 |                |
+  StakersConstants.sol   |    81.82 |      100 |    81.82 |    81.82 |          83,88 |
  test/                   |      100 |      100 |       80 |      100 |                |
   SFCI.sol               |      100 |      100 |      100 |      100 |                |
   StubEvmWriter.sol      |      100 |      100 |       40 |      100 |                |
@@ -275,7 +263,7 @@ File                     |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered 
  version/                |      100 |      100 |      100 |      100 |                |
   Version.sol            |      100 |      100 |      100 |      100 |                |
 -------------------------|----------|----------|----------|----------|----------------|
-All files                |    69.77 |    54.05 |    65.95 |    69.52 |                |
+All files                |    72.27 |    56.96 |    66.49 |    71.96 |                |
 -------------------------|----------|----------|----------|----------|----------------|
 ```
 
@@ -320,3 +308,8 @@ The `SFC` and `NodeDriverAuth` contracrs has one owner role:
 ### Backend
 
 The contracts system is deployed in the genesis block and controlled by the fantom go-opera node with its modifications.
+
+### Notes
+
+The getStakes function does not guarantee that the order of stakes will be maintained over time. External agents
+(including other contracts) shouldn't assume the ordering to be consistent.

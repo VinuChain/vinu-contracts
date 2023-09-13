@@ -1569,6 +1569,16 @@ contract('SFC', async ([firstValidator, testValidator, firstDelegator, secondDel
             expect(stakes[3].delegator).eq(secondDelegator)
             expect(stakes[3].validatorId).eq(testValidator3ID.toString())
             expect(stakes[3].amount).eq(amount18('220000').toString())
+
+            await this.sfc.undelegate(testValidator3ID, amount18('220000'), { from: secondDelegator })
+            stakes = (await this.sfc.getStakes(0, 10)).slice(1)
+            expect(stakes[3].delegator).eq(zeroAddr)
+            expect(stakes[3].validatorId).eq('0')
+            expect(stakes[3].amount).eq('0')
+
+            expect(stakes[2].delegator).eq(account3)
+            expect(stakes[2].validatorId).eq(testValidator3ID.toString())
+            expect(stakes[2].amount).eq(amount18('1000000').toString())
         });
 
         it('Should not be able to undelegate 0 amount', async () => {
@@ -1664,96 +1674,96 @@ contract('SFC', async ([firstValidator, testValidator, firstDelegator, secondDel
     });
 
     describe('Test Calculation Rewards with Lockup', () => {
-    //     it('Should not be able to lock 0 amount', async () => {
-    //         await sealEpoch(this.sfc, (new BN(1000)).toString());
+        it('Should not be able to lock 0 amount', async () => {
+            await sealEpoch(this.sfc, (new BN(1000)).toString());
 
-    //         await expectRevert(this.sfc.lockStake(testValidator1ID, (2 * 60 * 60 * 24 * 365), amount18('0'), {
-    //             from: thirdDelegator,
-    //         }), 'zero amount');
-    //     });
+            await expectRevert(this.sfc.lockStake(testValidator1ID, (2 * 60 * 60 * 24 * 365), amount18('0'), {
+                from: thirdDelegator,
+            }), 'zero amount');
+        });
 
-    //     it('Should not be able to lock more than a year', async () => {
-    //         await sealEpoch(this.sfc, (new BN(1000)).toString());
+        it('Should not be able to lock more than a year', async () => {
+            await sealEpoch(this.sfc, (new BN(1000)).toString());
 
-    //         await this.sfc.delegate(testValidator3ID, {
-    //             from: thirdDelegator,
-    //             value: amount18('10'),
-    //         });
+            await this.sfc.delegate(testValidator3ID, {
+                from: thirdDelegator,
+                value: amount18('10'),
+            });
 
-    //         await expectRevert(this.sfc.lockStake(testValidator3ID, (2 * 60 * 60 * 24 * 365), amount18('1'), {
-    //             from: thirdDelegator,
-    //         }), 'incorrect duration');
-    //     });
+            await expectRevert(this.sfc.lockStake(testValidator3ID, (2 * 60 * 60 * 24 * 365), amount18('1'), {
+                from: thirdDelegator,
+            }), 'incorrect duration');
+        });
 
-    //     it('Should not be able to lock more than validator lockup period', async () => {
-    //         await sealEpoch(this.sfc, (new BN(1000)).toString());
+        it('Should not be able to lock more than validator lockup period', async () => {
+            await sealEpoch(this.sfc, (new BN(1000)).toString());
 
-    //         await this.sfc.delegate(testValidator3ID, {
-    //             from: thirdDelegator,
-    //             value: amount18('10'),
-    //         });
+            await this.sfc.delegate(testValidator3ID, {
+                from: thirdDelegator,
+                value: amount18('10'),
+            });
 
-    //         await expectRevert(this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 365), amount18('1'),
-    //             { from: thirdDelegator }), 'validator lockup period will end earlier');
-    //     });
+            await expectRevert(this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 365), amount18('1'),
+                { from: thirdDelegator }), 'validator lockup period will end earlier');
+        });
 
-    //     it('Should not be able to lock more than validator lockup period', async () => {
-    //         await sealEpoch(this.sfc, (new BN(1000)).toString());
+        it('Should not be able to lock more than validator lockup period', async () => {
+            await sealEpoch(this.sfc, (new BN(1000)).toString());
 
-    //         await this.sfc.delegate(testValidator3ID, {
-    //             from: thirdDelegator,
-    //             value: amount18('10'),
-    //         });
+            await this.sfc.delegate(testValidator3ID, {
+                from: thirdDelegator,
+                value: amount18('10'),
+            });
 
-    //         await expectRevert(this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 365), amount18('1'),
-    //             { from: thirdDelegator }), 'validator lockup period will end earlier');
-    //     });
+            await expectRevert(this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 365), amount18('1'),
+                { from: thirdDelegator }), 'validator lockup period will end earlier');
+        });
 
-    //     it('Should be able to lock for 1 month', async () => {
-    //         await sealEpoch(this.sfc, (new BN(1000)).toString());
+        it('Should be able to lock for 1 month', async () => {
+            await sealEpoch(this.sfc, (new BN(1000)).toString());
 
-    //         await this.sfc.delegate(testValidator3ID, {
-    //             from: thirdDelegator,
-    //             value: amount18('10000000'),
-    //         });
+            await this.sfc.delegate(testValidator3ID, {
+                from: thirdDelegator,
+                value: amount18('10000000'),
+            });
 
-    //         await this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 14), amount18('1000000'),
-    //             { from: thirdDelegator });
+            await this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 14), amount18('1000000'),
+                { from: thirdDelegator });
 
-    //         await sealEpoch(this.sfc, (new BN(60 * 60 * 24 * 14)).toString());
-    //     });
+            await sealEpoch(this.sfc, (new BN(60 * 60 * 24 * 14)).toString());
+        });
 
-    //     it('Should not unlock if not locked up FTM', async () => {
-    //         await sealEpoch(this.sfc, (new BN(1000)).toString());
+        it('Should not unlock if not locked up FTM', async () => {
+            await sealEpoch(this.sfc, (new BN(1000)).toString());
 
-    //         await this.sfc.delegate(testValidator3ID, {
-    //             from: thirdDelegator,
-    //             value: amount18('10000000'),
-    //         });
+            await this.sfc.delegate(testValidator3ID, {
+                from: thirdDelegator,
+                value: amount18('10000000'),
+            });
 
-    //         await this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 14), amount18('1000000'),
-    //             { from: thirdDelegator });
+            await this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 14), amount18('1000000'),
+                { from: thirdDelegator });
 
-    //         await sealEpoch(this.sfc, (new BN(60 * 60 * 24 * 14)).toString());
+            await sealEpoch(this.sfc, (new BN(60 * 60 * 24 * 14)).toString());
 
-    //         await expectRevert(this.sfc.unlockStake(testValidator3ID, amount18('10')), 'not locked up');
-    //     });
+            await expectRevert(this.sfc.unlockStake(testValidator3ID, amount18('10')), 'not locked up');
+        });
 
-    //     it('Should not be able to unlock more than locked stake', async () => {
-    //         await sealEpoch(this.sfc, (new BN(1000)).toString());
+        it('Should not be able to unlock more than locked stake', async () => {
+            await sealEpoch(this.sfc, (new BN(1000)).toString());
 
-    //         await this.sfc.delegate(testValidator3ID, {
-    //             from: thirdDelegator,
-    //             value: amount18('10000000'),
-    //         });
+            await this.sfc.delegate(testValidator3ID, {
+                from: thirdDelegator,
+                value: amount18('10000000'),
+            });
 
-    //         await this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 14), amount18('1000000'),
-    //             { from: thirdDelegator });
+            await this.sfc.lockStake(testValidator3ID, (60 * 60 * 24 * 14), amount18('1000000'),
+                { from: thirdDelegator });
 
-    //         await sealEpoch(this.sfc, (new BN(60 * 60 * 24 * 14)).toString());
+            await sealEpoch(this.sfc, (new BN(60 * 60 * 24 * 14)).toString());
 
-    //         await expectRevert(this.sfc.unlockStake(testValidator3ID, amount18('10000000'), { from: thirdDelegator }), 'not enough locked stake');
-    //     });
+            await expectRevert(this.sfc.unlockStake(testValidator3ID, amount18('10000000'), { from: thirdDelegator }), 'not enough locked stake');
+        });
 
         it('Unlocking penalty should be 0 for delegator', async () => {
             
