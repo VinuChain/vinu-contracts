@@ -168,8 +168,6 @@ interface SFCUnitTestI {
 
     function slashingRefundRatio(uint256) external view returns (uint256);
 
-    function stakeTokenizerAddress() external view returns (address);
-
     function stashedRewardsUntilEpoch(
         address,
         uint256
@@ -295,17 +293,7 @@ interface SFCUnitTestI {
         uint256 refundRatio
     ) external;
 
-    function updateStakeTokenizerAddress(address addr) external;
-
     function updateTreasuryAddress(address v) external;
-
-    function mintFTM(
-        address receiver,
-        uint256 amount,
-        string calldata justification
-    ) external;
-
-    function burnFTM(uint256 amount) external;
 
     function sealEpoch(
         uint256[] calldata offlineTime,

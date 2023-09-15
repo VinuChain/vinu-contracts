@@ -7,7 +7,6 @@ import "./StakersConstants.sol";
 import "../version/Version.sol";
 
 import "../common/Decimal.sol";
-import "./StakeTokenizer.sol";
 import "./NodeDriver.sol";
 
 /**
@@ -107,8 +106,6 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
 
     mapping(uint256 => uint256) public slashingRefundRatio; // validator ID -> (slashing refund ratio)
 
-    address public stakeTokenizerAddress;
-
     struct StakeWithoutAmount {
         address delegator;
         uint96 timestamp;
@@ -181,11 +178,6 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         uint256 lockupExtraReward,
         uint256 lockupBaseReward,
         uint256 unlockedReward
-    );
-    event InflatedFTM(
-        address indexed receiver,
-        uint256 amount,
-        string justification
     );
     event LockedUpStake(
         address indexed delegator,
@@ -763,10 +755,6 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
             amount <= getUnlockedStake(delegator, toValidatorID),
             "not enough unlocked stake"
         );
-        require(
-            _checkAllowedToWithdraw(delegator, toValidatorID),
-            "outstanding sFTM balance"
-        );
 
         uint256 wrID = wrIdCount[delegator][toValidatorID]++;
 
@@ -821,10 +809,6 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
             toValidatorID
         ][wrID];
         require(request.epoch != 0, "request doesn't exist");
-        require(
-            _checkAllowedToWithdraw(delegator, toValidatorID),
-            "outstanding sFTM balance"
-        );
 
         uint256 requestTime = request.time;
         uint256 requestEpoch = request.epoch;
@@ -868,7 +852,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         require(amount > penalty, "stake is fully slashed");
         // It's important that we transfer after erasing (protection against Re-Entrancy)
         (bool sent, ) = delegator.call.value(amount.sub(penalty))("");
-        require(sent, "Failed to send FTM");
+        require(sent, "Failed to send VC");
 
         emit Withdrawn(delegator, toValidatorID, wrID, amount);
     }
@@ -1163,7 +1147,6 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         internal
         returns (Rewards memory rewards)
     {
-        require(_checkAllowedToWithdraw(delegator, toValidatorID), "outstanding sFTM balance");
         _stashRewards(delegator, toValidatorID);
         rewards = _rewardsStash[delegator][toValidatorID];
         uint256 totalReward = rewards
@@ -1190,7 +1173,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
                 rewards.unlockedReward
             )
         )("");
-        require(sent, "Failed to send FTM");
+        require(sent, "Failed to send VC");
 
         emit ClaimedRewards(
             delegator,
@@ -1310,14 +1293,6 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         );
         slashingRefundRatio[validatorID] = refundRatio;
         emit UpdatedSlashingRefundRatio(validatorID, refundRatio);
-    }
-
-    /**
-     * @dev Updating StakeTokenizer contract address
-     * @param addr StakeTokenizer contract address
-     */
-    function updateStakeTokenizerAddress(address addr) external onlyOwner {
-        stakeTokenizerAddress = addr;
     }
 
     function _sealEpoch_offline(
@@ -1561,21 +1536,6 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
             getLockupInfo[delegator][toValidatorID].endTime;
     }
 
-    function _checkAllowedToWithdraw(address delegator, uint256 toValidatorID)
-        internal
-        view
-        returns (bool)
-    {
-        if (stakeTokenizerAddress == address(0)) {
-            return true;
-        }
-        return
-            StakeTokenizer(stakeTokenizerAddress).allowedToWithdrawStake(
-                delegator,
-                toValidatorID
-            );
-    }
-
     /**
      * @dev Getting the unlocked stake amount
      * @param delegator Delegator address
@@ -1698,10 +1658,6 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         require(amount > 0, "zero amount");
         require(isLockedUp(delegator, toValidatorID), "not locked up");
         require(amount <= ld.lockedStake, "not enough locked stake");
-        require(
-            _checkAllowedToWithdraw(delegator, toValidatorID),
-            "outstanding sFTM balance"
-        );
 
         _stashRewards(delegator, toValidatorID);
 

@@ -221,7 +221,7 @@ BN { negative: 0, words: [ 0, <1 empty item> ], length: 1, red: null }
       ✓ Should not be able to lock more than validator lockup period (2107ms)
       ✓ Should not be able to lock more than validator lockup period (1318ms)
       ✓ Should be able to lock for 1 month (3671ms)
-      ✓ Should not unlock if not locked up FTM (3067ms)
+      ✓ Should not unlock if not locked up VC (3067ms)
       ✓ Should not be able to unlock more than locked stake (2180ms)
       ✓ Unlocking penalty should be 0 for delegator (5163ms)
       ✓ Should unlock after period ended and stash rewards will be reverted (3386ms)

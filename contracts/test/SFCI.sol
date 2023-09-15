@@ -32,8 +32,6 @@ interface SFCI {
 
     function slashingRefundRatio(uint256) external view returns (uint256);
 
-    function stakeTokenizerAddress() external view returns (address);
-
     function stashedRewardsUntilEpoch(address, uint256) external view returns (uint256);
 
     function totalActiveStake() external view returns (uint256);
@@ -102,13 +100,7 @@ interface SFCI {
 
     function updateSlashingRefundRatio(uint256 validatorID, uint256 refundRatio) external;
 
-    function updateStakeTokenizerAddress(address addr) external;
-
     function updateTreasuryAddress(address v) external;
-
-    function mintFTM(address receiver, uint256 amount, string calldata justification) external;
-
-    function burnFTM(uint256 amount) external;
 
     function sealEpoch(uint256[] calldata offlineTime, uint256[] calldata offlineBlocks, uint256[] calldata uptimes, uint256[] calldata originatedTxsFee) external;
 
