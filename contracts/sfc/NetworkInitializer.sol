@@ -1,8 +1,20 @@
 pragma experimental ABIEncoderV2;
 pragma solidity 0.5.17;
 
-import "./SFC.sol";
 import "./NodeDriver.sol";
+
+/**
+ * @title Required SFC interface
+ * @dev SFC contract initialize
+ */
+interface SFCI {
+    function initialize(
+        uint256 sealedEpoch,
+        uint256 _totalSupply,
+        address nodeDriver,
+        address _owner
+    ) external;
+}
 
 /**
  * @title NetworkInitializer
@@ -31,12 +43,7 @@ contract NetworkInitializer {
         NodeDriver(_driver).initialize(_auth, _evmWriter);
         NodeDriverAuth(_auth).initialize(_sfc, _driver, _owner);
 
-        SFC(_sfc).initialize(
-            sealedEpoch,
-            totalSupply,
-            _auth,
-            _owner
-        );
+        SFCI(_sfc).initialize(sealedEpoch, totalSupply, _auth, _owner);
         selfdestruct(address(0));
     }
 }

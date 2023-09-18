@@ -44,6 +44,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     uint256 public totalStake;
     uint256 public totalActiveStake;
     uint256 public totalSlashedStake;
+    uint256 public totalPenalty;
 
     struct Rewards {
         uint256 lockupExtraReward;
@@ -119,7 +120,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         uint256 amount;
     }
 
-    StakeWithoutAmount[] public stakes;
+    StakeWithoutAmount[] internal stakes;
     mapping(address => mapping(uint256 => uint256)) internal stakePosition;
 
     mapping(address => mapping(uint256 => uint256)) internal wrIdCount;
@@ -221,7 +222,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      * @return Validator IDs
      */
     function getEpochValidatorIDs(uint256 epoch)
-        public
+        external
         view
         returns (uint256[] memory)
     {
@@ -235,7 +236,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      * @return Amount of received stake
      */
     function getEpochReceivedStake(uint256 epoch, uint256 validatorID)
-        public
+        external
         view
         returns (uint256)
     {
@@ -251,7 +252,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     function getEpochAccumulatedRewardPerToken(
         uint256 epoch,
         uint256 validatorID
-    ) public view returns (uint256) {
+    ) external view returns (uint256) {
         return getEpochSnapshot[epoch].accumulatedRewardPerToken[validatorID];
     }
 
@@ -262,7 +263,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      * @return Validator's accumulated uptime
      */
     function getEpochAccumulatedUptime(uint256 epoch, uint256 validatorID)
-        public
+        external
         view
         returns (uint256)
     {
@@ -278,7 +279,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     function getEpochAccumulatedOriginatedTxsFee(
         uint256 epoch,
         uint256 validatorID
-    ) public view returns (uint256) {
+    ) external view returns (uint256) {
         return getEpochSnapshot[epoch].accumulatedOriginatedTxsFee[validatorID];
     }
 
@@ -289,7 +290,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      * @return Validator's Epoch's validator offline time
      */
     function getEpochOfflineTime(uint256 epoch, uint256 validatorID)
-        public
+        external
         view
         returns (uint256)
     {
@@ -303,7 +304,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      * @return Validator's Epoch's validator offline blocks
      */
     function getEpochOfflineBlocks(uint256 epoch, uint256 validatorID)
-        public
+        external
         view
         returns (uint256)
     {
@@ -317,7 +318,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      * @return Validator's epoch's delegator rewards stash
      */
     function rewardsStash(address delegator, uint256 validatorID)
-        public
+        external
         view
         returns (uint256)
     {
@@ -357,7 +358,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     ) external view returns (Stake[] memory) {
         uint256 length = stakes.length;
         Stake[] memory stakes_ = new Stake[](limit);
-        for (uint256 i; i < limit; ) {
+        for (uint256 i = 0; i < limit; ) {
             if (offset.add(i) >= length) break;
             address delegator = stakes[offset + i].delegator;
             uint256 validatorId = stakes[offset + i].validatorId;
@@ -387,7 +388,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         uint256 limit
     ) external view returns (WithdrawalRequest[] memory) {
         WithdrawalRequest[] memory requests_ = new WithdrawalRequest[](limit);
-        for (uint256 i; i < limit; ) {
+        for (uint256 i = 0; i < limit; ) {
             requests_[i] = getWithdrawalRequest[delegator][validatorID][
                 offset.add(i)
             ];
@@ -693,7 +694,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         uint256 toValidatorID,
         uint256 amount
     ) internal {
-        getStake[delegator][toValidatorID] -= amount;
+        getStake[delegator][toValidatorID] = getStake[delegator][toValidatorID].sub(amount);
         getValidator[toValidatorID].receivedStake = getValidator[toValidatorID]
             .receivedStake
             .sub(amount);
@@ -726,7 +727,10 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     }
 
     function _removeStake(uint256 position) internal {
-        uint256 lastPos = stakes.length.sub(1);
+        uint256 stakesLength = stakes.length;
+        assert(position < stakesLength);
+
+        uint256 lastPos = stakesLength.sub(1);
         if (position != lastPos) {
             stakes[position] = stakes[lastPos];
 
@@ -735,6 +739,8 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
             ] = position;
         }
         stakes.pop();
+
+        assert(stakesLength - 1 != 0);
     }
 
     /**
@@ -745,7 +751,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
     function undelegate(
         uint256 toValidatorID,
         uint256 amount
-    ) public {
+    ) external {
         address delegator = msg.sender;
 
         _stashRewards(delegator, toValidatorID);
@@ -803,7 +809,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      * @param toValidatorID Validator ID
      * @param wrID Undelegate request ID
      */
-    function withdraw(uint256 toValidatorID, uint256 wrID) public {
+    function withdraw(uint256 toValidatorID, uint256 wrID) external {
         address payable delegator = msg.sender;
         WithdrawalRequest memory request = getWithdrawalRequest[delegator][
             toValidatorID
@@ -848,7 +854,10 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         );
         delete getWithdrawalRequest[delegator][toValidatorID][wrID];
 
-        totalSlashedStake += penalty;
+        if (penalty != 0) {
+            totalSlashedStake = totalSlashedStake.add(penalty);
+            totalPenalty = totalPenalty.add(penalty);
+        }
         require(amount > penalty, "stake is fully slashed");
         // It's important that we transfer after erasing (protection against Re-Entrancy)
         (bool sent, ) = delegator.call.value(amount.sub(penalty))("");
@@ -1091,7 +1100,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      * @return Amount of pending rewards
      */
     function pendingRewards(address delegator, uint256 toValidatorID)
-        public
+        external
         view
         returns (uint256)
     {
@@ -1164,7 +1173,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      * @dev Claiming rewards
      * @param toValidatorID Validator ID
      */
-    function claimRewards(uint256 toValidatorID) public {
+    function claimRewards(uint256 toValidatorID) external {
         address payable delegator = msg.sender;
         Rewards memory rewards = _claimRewards(delegator, toValidatorID);
         // It's important that we transfer after erasing (protection against Re-Entrancy)
@@ -1188,7 +1197,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      * @dev Restaking rewards
      * @param toValidatorID Validator ID
      */
-    function restakeRewards(uint256 toValidatorID) public {
+    function restakeRewards(uint256 toValidatorID) external {
         address delegator = msg.sender;
         Rewards memory rewards = _claimRewards(delegator, toValidatorID);
 
@@ -1241,7 +1250,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
      * @return time Threshold time
      */
     function offlinePenaltyThreshold()
-        public
+        external
         view
         returns (uint256 blocksNum, uint256 time)
     {
@@ -1340,7 +1349,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
             0
         );
         EpochSnapshot storage prevSnapshot = getEpochSnapshot[
-            currentEpoch().sub(1)
+            currentSealedEpoch
         ];
 
         ctx.epochDuration = 1;
@@ -1605,7 +1614,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         uint256 toValidatorID,
         uint256 lockupDuration,
         uint256 amount
-    ) public {
+    ) external {
         address delegator = msg.sender;
         require(amount > 0, "zero amount");
         require(!isLockedUp(delegator, toValidatorID), "already locked up");
@@ -1616,7 +1625,7 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         uint256 toValidatorID,
         uint256 lockupDuration,
         uint256 amount
-    ) public {
+    ) external {
         address delegator = msg.sender;
         _lockStake(delegator, toValidatorID, lockupDuration, amount);
     }
@@ -1669,7 +1678,10 @@ contract SFC is Initializable, Ownable, StakersConstants, Version {
         );
 
         ld.lockedStake -= amount;
-        _rawUndelegate(delegator, toValidatorID, penalty);
+        if (penalty != 0) {
+            totalPenalty = totalPenalty.add(penalty);
+            _rawUndelegate(delegator, toValidatorID, penalty);
+        }
 
         emit UnlockedStake(delegator, toValidatorID, amount, penalty);
         return penalty;

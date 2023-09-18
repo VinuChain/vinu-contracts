@@ -1,79 +1,7 @@
 pragma experimental ABIEncoderV2;
 pragma solidity 0.5.17;
 
-import "../sfc/SFC.sol";
-
-contract UnitTestSFC is SFC {
-    uint256 internal time;
-    bool public allowedNonNodeCalls;
-
-    function rebaseTime() external {
-        time = block.timestamp;
-    }
-
-    function advanceTime(uint256 diff) external {
-        time += diff;
-    }
-
-    function getTime() external view returns (uint256) {
-        return time;
-    }
-
-    function getBlockTime() external view returns (uint256) {
-        return block.timestamp;
-    }
-
-    function enableNonNodeCalls() external {
-        allowedNonNodeCalls = true;
-    }
-
-    function disableNonNodeCalls() external {
-        allowedNonNodeCalls = false;
-    }
-
-    function _now() internal view returns (uint256) {
-        return time;
-    }
-
-    function isNode(address addr) internal view returns (bool) {
-        if (allowedNonNodeCalls) {
-            return true;
-        }
-        return SFC.isNode(addr);
-    }
-
-    function highestLockupEpoch(
-        address delegator,
-        uint256 validatorID
-    ) external view returns (uint256) {
-        return _highestLockupEpoch(delegator, validatorID);
-    }
-}
-
-contract UnitTestNetworkInitializer {
-    function initializeAll(
-        uint256 sealedEpoch,
-        uint256 totalSupply,
-        address payable _sfc,
-        address _auth,
-        address _driver,
-        address _evmWriter,
-        address _owner
-    ) external {
-        NodeDriver(_driver).initialize(_auth, _evmWriter);
-        NodeDriverAuth(_auth).initialize(_sfc, _driver, _owner);
-
-        SFCUnitTestI(_sfc).initialize(
-            sealedEpoch,
-            totalSupply,
-            _auth,
-            _owner
-        );
-        selfdestruct(address(0));
-    }
-}
-
-interface SFCUnitTestI {
+interface SFCI {
     struct Stake {
         address delegator;
         uint96 timestamp;
@@ -87,7 +15,19 @@ interface SFCUnitTestI {
         uint256 amount;
     }
 
+    function MIN_OFFLINE_PENALTY_THRESHOLD_TIME()
+        external
+        view
+        returns (uint256);
+
+    function MIN_OFFLINE_PENALTY_THRESHOLD_BLOCKS_NUM()
+        external
+        view
+        returns (uint256);
+
     function currentSealedEpoch() external view returns (uint256);
+
+    function genesisValidator() external view returns (address);
 
     function getEpochSnapshot(
         uint256
@@ -118,6 +58,18 @@ interface SFCUnitTestI {
         );
 
     function getStake(address, uint256) external view returns (uint256);
+
+    function getStakes(
+        uint256 offset,
+        uint256 limit
+    ) external view returns (Stake[] memory);
+
+    function getWrRequests(
+        address delegator,
+        uint256 validatorID,
+        uint256 offset,
+        uint256 limit
+    ) external view returns (WithdrawalRequest[] memory);
 
     function getStashedLockupRewards(
         address,
@@ -160,8 +112,6 @@ interface SFCUnitTestI {
 
     function lastValidatorID() external view returns (uint256);
 
-    function minGasPrice() external view returns (uint256);
-
     function owner() external view returns (address);
 
     function renounceOwnership() external;
@@ -173,8 +123,6 @@ interface SFCUnitTestI {
         uint256
     ) external view returns (uint256);
 
-    function targetGasPowerPerSecond() external view returns (uint256);
-
     function totalActiveStake() external view returns (uint256);
 
     function totalSlashedStake() external view returns (uint256);
@@ -183,33 +131,17 @@ interface SFCUnitTestI {
 
     function totalSupply() external view returns (uint256);
 
-    function transferOwnership(address newOwner) external;
+    function totalPenalty() external view returns (uint256);
 
-    function treasuryAddress() external view returns (address);
+    function transferOwnership(address newOwner) external;
 
     function version() external pure returns (bytes3);
 
     function currentEpoch() external view returns (uint256);
 
-    function updateConstsAddress(address v) external;
-
-    function constsAddress() external view returns (address);
-
     function getEpochValidatorIDs(
         uint256 epoch
     ) external view returns (uint256[] memory);
-
-    function getStakes(
-        uint256 offset,
-        uint256 limit
-    ) external view returns (Stake[] memory);
-
-    function getWrRequests(
-        address delegator,
-        uint256 validatorID,
-        uint256 offset,
-        uint256 limit
-    ) external view returns (WithdrawalRequest[] memory);
 
     function getEpochReceivedStake(
         uint256 epoch,
@@ -276,11 +208,6 @@ interface SFCUnitTestI {
 
     function restakeRewards(uint256 toValidatorID) external;
 
-    function offlinePenaltyThreshold()
-        external
-        view
-        returns (uint256 blocksNum, uint256 time);
-
     function updateBaseRewardPerSecond(uint256 value) external;
 
     function updateOfflinePenaltyThreshold(
@@ -292,8 +219,6 @@ interface SFCUnitTestI {
         uint256 validatorID,
         uint256 refundRatio
     ) external;
-
-    function updateTreasuryAddress(address v) external;
 
     function sealEpoch(
         uint256[] calldata offlineTime,
@@ -361,35 +286,6 @@ interface SFCUnitTestI {
         uint256 rewards
     ) external;
 
-    function _syncValidator(uint256 validatorID, bool syncPubkey) external;
-
-    function getTime() external view returns (uint256);
-
-    function getBlockTime() external view returns (uint256);
-
-    function rebaseTime() external;
-
-    function advanceTime(uint256) external;
-
-    function highestLockupEpoch(
-        address,
-        uint256
-    ) external view returns (uint256);
-
-    function enableNonNodeCalls() external;
-
-    function disableNonNodeCalls() external;
-
-    function allowedNonNodeCalls() external view returns (bool);
-
-    function offlinePenaltyThresholdTime() external view returns (uint256);
-
-    function offlinePenaltyThresholdBlocksNum() external view returns (uint256);
-
-    function updateVoteBookAddress(address v) external;
-
-    function voteBookAddress(address v) external view returns (address);
-
     function minSelfStake() external pure returns (uint256);
 
     function maxDelegatedRatio() external pure returns (uint256);
@@ -407,4 +303,12 @@ interface SFCUnitTestI {
     function withdrawalPeriodEpochs() external pure returns (uint256);
 
     function withdrawalPeriodTime() external pure returns (uint256);
+
+    function withdrawalPeriodEpochsValidator() external pure returns (uint256);
+
+    function withdrawalPeriodTimeValidator() external pure returns (uint256);
+
+    function offlinePenaltyThresholdTime() external view returns (uint256);
+
+    function offlinePenaltyThresholdBlocksNum() external view returns (uint256);
 }
