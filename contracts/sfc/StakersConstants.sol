@@ -34,7 +34,7 @@ contract StakersConstants {
      */
     function validatorCommission() public pure returns (uint256) {
         // 100%
-        return Decimal.unit();
+        return Decimal.unit() * 15 / 100;
     }
 
     /**
