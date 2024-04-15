@@ -8,3 +8,4 @@ coverage.json
 /coverageEnv/
 .vscode
 .secret
+.DS_Store
