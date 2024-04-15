@@ -6,8 +6,8 @@ module.exports = {
     networks: {
         // Другие настройки сетей
         private: {
-            provider: () => new HDWalletProvider(privateKey, `https://vinufoundation-rpc.com`),
-            network_id: 206,
+            provider: () => new HDWalletProvider(privateKey, `https://for-test.vinuchain-rpc.com`),
+            network_id: 207207,
             // Другие параметры сети
         }
     },
