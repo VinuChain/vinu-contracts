@@ -33,8 +33,8 @@ contract StakersConstants {
      * @dev The commission fee in percentage a validator will get from a delegation, e.g., 15%
      */
     function validatorCommission() public pure returns (uint256) {
-        // 100%
-        return Decimal.unit();
+        // 15%
+        return Decimal.unit() * 15 / 100;
     }
 
     /**
@@ -84,7 +84,7 @@ contract StakersConstants {
     }
 
     function withdrawalPeriodTimeValidator() public pure returns (uint256) {
-        // 30 days
-        return 60 * 60 * 24 * 30;
+        // 1 day
+        return 60 * 60 * 24;
     }
 }
