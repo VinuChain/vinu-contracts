@@ -84,7 +84,7 @@ contract StakersConstants {
     }
 
     function withdrawalPeriodTimeValidator() public pure returns (uint256) {
-        // 30 days
-        return 60 * 60 * 24 * 30;
+        // 1 day
+        return 60 * 60 * 24;
     }
 }
